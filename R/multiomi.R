@@ -7,7 +7,12 @@
 #' @export
 #'
 #' @examples
-polt_barcode_umap <- function(barcode_use,pbmc){
+plot_clone_embedding <- function(barcode_use,pbmc,colors=c(rgb(200/255,200/255,200/255),
+                                                        rgb(230/255,230/255,230/255),
+                                                        rgb(239/255,153/255,81/255),
+                                                        rgb(91/255,166/255,218/255),
+                                                        rgb(217/255,83/255,25/255)
+)){
   ### pbmc is seurat object need cell_fate in metadata
   ### barcode_use is vector
   barcode_anno = rep('other barcode',ncol(pbmc))
@@ -20,16 +25,11 @@ polt_barcode_umap <- function(barcode_use,pbmc){
   pbmc[['Barcode_family']]=barcode_anno
   coor = as.data.frame(pbmc@reductions$umap@cell.embeddings)
   coor$barcode_type = pbmc@meta.data$Barcode_family
-  coor1 = coor[coor$barcode_type %in% c('other barcodes','no barcodes'),]
-  coor2 = coor[!coor$barcode_type %in% c('other barcodes','no barcodes'),]
-  ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point()+
-    geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=3)+theme_classic()+
-    scale_color_manual(values = c(rgb(200/255,200/255,200/255),
-                                  rgb(230/255,230/255,230/255),
-                                  rgb(91/255,166/255,218/255),
-                                  rgb(217/255,83/255,25/255),
-                                  rgb(239/255,153/255,81/255)
-    ))
+  coor1 = coor[coor$barcode_type %in% c('other barcode','no barcode'),]
+  coor2 = coor[!coor$barcode_type %in% c('other barcode','no barcode'),]
+  ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point(data=coor1,size=1)+
+    geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_classic()+
+    scale_color_manual(values = colors)
 }
 
 multi_relationship = function(pbmc){
@@ -69,7 +69,7 @@ function(pbmc){
   library(ggraph)
   library(igraph)
   meta = pbmc@meta.data
-  
+
   meta = meta[!is.na(meta$cell_fate),]
   meta =  meta[,c('cell_fate','cell_type')]
   meta$cell_fate = as.character(meta$cell_fate)
@@ -79,15 +79,15 @@ function(pbmc){
                    stringsAsFactors = F)
   hierarchy = rbind(hierarchy,df2)
   colnames(hierarchy) = c('from','to')
-  
+
   # create a vertices data.frame. One line per object of our hierarchy, giving features of nodes.
   ver_barcode = data.frame(name = unique(meta$cell_fate),color = rep(' polylox',length(unique(meta$cell_fate))))
   ver_barcode = rbind(ver_barcode,c(' polylox',' polylox'))
   ver_ct = data.frame(name = unique(meta$cell_type),color = unique(meta$cell_type))
   vertices <- rbind(ver_barcode,ver_ct)
-  
+
   mygraph <- graph_from_data_frame(hierarchy, vertices=vertices )
-  
+
   ggraph(mygraph, layout = 'dendrogram', circular = TRUE) +
     geom_edge_diagonal(color=rgb(230/255,230/255,230/255)) +
     theme_graph() +

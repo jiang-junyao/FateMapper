@@ -16,21 +16,15 @@
 #' @export
 #'
 #' @examples fate_ct_heatmap(fate_test)
-fate_ct_heatmap <- function(data,idx='cell_type',order_use=NULL,
-                            show_rownames = T,
-                            col = rev(colorRampPalette(c("#cc0000"
-                                                         , "#FFff00",
-                                                         '#66ccff',
-                                                         '#000066'))(50)),
-                            cluster_row = F,cluster_cols = T,
-                            ...){
-
+fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
+                         cluster_rows=F,cluster_cols=T){
+  data = data[!is.na(data[,1]),]
   lineage_use = unique(data[,idx])
   freq_list = list()
 
-  for (i in unique(data[,1])) {
-    data_use = data[data[,1]==i,]
-    freq = as.data.frame(table(data_use[,idx]))
+  for (i in unique(data$barcodes)) {
+    data_use = data[data$barcodes==i,]
+    freq = as.data.frame(table(data_use$celltype))
     freq$Var1 = as.character(freq$Var1)
     freq = freq[freq$Freq!=0,]
     lineage_absent = lineage_use[!lineage_use %in% as.character(freq$Var1)]
@@ -46,11 +40,14 @@ fate_ct_heatmap <- function(data,idx='cell_type',order_use=NULL,
   rownames(freq_df) = names(freq_list)
   colnames(freq_df) = lineage_use
 
+  col<- rev(colorRampPalette(c("#cc0000", "#FFff00",'#66ccff','#000066'))(50))
   if (!is.null(order_use)) {
     freq_df = freq_df[,order_use]
   }
-  pheatmap::pheatmap(log10(freq_df+0.0001),show_rownames =show_rownames,color = col
-                     ,cluster_rows = cluster_row,cluster_cols = cluster_cols,...)
+  pheatmap::pheatmap(log10(freq_df+0.0001),show_rownames =show_row,color = col
+                     ,cluster_rows = cluster_rows,cluster_cols = cluster_cols)
+
+  return(freq_df)
 }
 
 #' Column plot for Composition of cell types of each barcode
@@ -144,7 +141,7 @@ cell_type_hier_heatmap <- function(data,idx='cell_type',method='spearman',
       colnames(df_plot)[2:3] = c(i,j)
       df_plot[is.na(df_plot)] = 0
 
-      sample_similarity = cor(df_plot[,2],df_plot[,3])
+      sample_similarity = cor(df_plot[,2],df_plot[,3],method = method)
       sample_similarity_list[[paste0(i,'-',j)]] = data.frame(i
                                                              ,j,sample_similarity)
     }
