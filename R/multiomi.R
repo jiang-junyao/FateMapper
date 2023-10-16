@@ -64,7 +64,7 @@ multi_relationship = function(pbmc){
   return(multi_rela)
 }
 
-function(pbmc){
+circu_plot <- function(pbmc){
   ### seurat object with cell_fate and cell_type
   library(ggraph)
   library(igraph)

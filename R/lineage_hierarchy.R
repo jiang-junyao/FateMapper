@@ -163,5 +163,44 @@ cell_type_hier_heatmap <- function(data,idx='cell_type',method='spearman',
 
 
 
+#' Calculate clone fate bias for specific cell type
+#'
+#' @param data data.frame, indicating lineage tracing data, first column should
+#' be lineage tracing barcodes, second column should be related cell type
+#' @param fate_use character, targeted fate cell type
+#'
+#' @return
+#' @export
+#'
+#' @examples
+clone_fate_bias <- function(data,fate_use = ''){
 
+  all_clone_size = nrow(data)
+  ct_all_clone_size = nrow(data[data[,2]==fate_use,])
+  list_result = list()
+
+  for (i in unique(data[,1])) {
+    data_clone = data[data[,1]==i,]
+    clone_size = nrow(data_clone)
+    clone_ct_size = nrow(data_clone[data_clone[,2]==fate_use,])
+    fate_ratio = clone_ct_size/clone_size
+    if (length(clone_ct_size)>0) {
+      p_val = fisher.test(data.frame(c(clone_ct_size,
+                                       clone_size-clone_ct_size),
+                             c(ct_all_clone_size-clone_ct_size,
+                               all_clone_size-(ct_all_clone_size-clone_ct_size))
+                             )
+                            )$p.value
+      FDR = p.adjust(p_val, method = "fdr")
+      list_result[[i]] = c(i,clone_size,fate_ratio,p_val,FDR)
+    }
+  }
+
+  result_df = as.data.frame(t(as.data.frame(list_result)))
+  colnames(result_df) = c('clone_name','clone_size','fate_ratio',
+                          'pvalue','fdr')
+  result_df = result_df[order(result_df[,5]),]
+  result_df = result_df[result_df[,3]>0,]
+  return(result_df)
+}
 
