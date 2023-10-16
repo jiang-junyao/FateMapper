@@ -16,10 +16,10 @@ plot_clone_embedding <- function(barcode_use,pbmc,colors=c(rgb(200/255,200/255,2
   ### pbmc is seurat object need cell_fate in metadata
   ### barcode_use is vector
   barcode_anno = rep('other barcode',ncol(pbmc))
-  barcode_anno[is.na(pbmc$cell_fate)] = 'no barcode'
+  barcode_anno[is.na(pbmc$barcodes)] = 'no barcode'
   for (i in 1:length(colnames(pbmc))) {
-    if (pbmc@meta.data$cell_fate[i] %in% barcode_use) {
-      barcode_anno[i] = paste0('polylox:',pbmc@meta.data$cell_fate[i])
+    if (pbmc@meta.data$barcodes[i] %in% barcode_use) {
+      barcode_anno[i] = paste0('select_barcode:',pbmc@meta.data$cell_fate[i])
     }
   }
   pbmc[['Barcode_family']]=barcode_anno
@@ -28,7 +28,7 @@ plot_clone_embedding <- function(barcode_use,pbmc,colors=c(rgb(200/255,200/255,2
   coor1 = coor[coor$barcode_type %in% c('other barcode','no barcode'),]
   coor2 = coor[!coor$barcode_type %in% c('other barcode','no barcode'),]
   ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point(data=coor1,size=1)+
-    geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_classic()+
+    geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_void()+
     scale_color_manual(values = colors)
 }
 

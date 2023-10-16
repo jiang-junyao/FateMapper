@@ -10,8 +10,12 @@ clone_fate_bias(data, fate_use = "")
 \item{data}{data.frame, indicating lineage tracing data, first column should
 be lineage tracing barcodes, second column should be related cell type}
 
-\item{fate_use}{character, targeted fate cell type}
+\item{fate_use}{character, targeted fate cell type. if fate_use == '', this
+function will automatically select clone dominant cell type.}
 }
 \description{
 Calculate clone fate bias for specific cell type
+}
+\examples{
+clone_fate_bias(fate_test)
 }

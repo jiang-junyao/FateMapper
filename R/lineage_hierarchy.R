@@ -21,7 +21,6 @@ fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
   data = data[!is.na(data[,1]),]
   lineage_use = unique(data[,idx])
   freq_list = list()
-
   for (i in unique(data$barcodes)) {
     data_use = data[data$barcodes==i,]
     freq = as.data.frame(table(data_use$celltype))
@@ -33,7 +32,7 @@ fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
     freq = rbind(freq,lineage_absent_df)
     rownames(freq) = freq$Var1
     freq = freq[lineage_use,]
-    freq_list[[i]] = as.data.frame(t(data.frame(freq$Freq)))
+    freq_list[[as.character(i)]] = as.data.frame(t(data.frame(freq$Freq)))
   }
 
   freq_df = do.call(dplyr::bind_rows,freq_list)
@@ -101,7 +100,7 @@ fate_ct_col <- function(data,idx='cell_type',
                             element_text(angle = 45,size=12,hjust=1))
 }
 
-#' Title
+#' Calculate cell fate similarity among all cell types
 #'
 #' @param data data.frame, indicating lineage tracing data, first column should
 #' be lineage tracing barcodes, second column should be related cell type
@@ -116,11 +115,10 @@ fate_ct_col <- function(data,idx='cell_type',
 #' barcodes correlation between cell type
 #' @export
 #'
-#' @examples cell_type_hier_heatmap(fate_test)
-cell_type_hier_heatmap <- function(data,idx='cell_type',method='spearman',
+#' @examples cell_type_fate_similartiy(fate_test)
+cell_type_fate_similartiy <- function(data,idx='celltype',method='spearman',
                                    plot = TRUE,...){
   lineage_use = unique(data[,idx])
-  library(ggtree)
   sample_similarity_list = list()
   for (i in lineage_use) {
     for (j in lineage_use) {
@@ -154,9 +152,6 @@ cell_type_hier_heatmap <- function(data,idx='cell_type',method='spearman',
   if (plot) {
     pheatmap::pheatmap(sample_similarity_df,...)
   }
-
-  #ggtree(pheatmap::pheatmap(sample_similarity_df)$tree_col,
-   #      layout = 'rectangular')+geom_tiplab(size=5,hjust = 1,vjust=1.2)
   return(sample_similarity_df)
 
 }
@@ -167,19 +162,28 @@ cell_type_hier_heatmap <- function(data,idx='cell_type',method='spearman',
 #'
 #' @param data data.frame, indicating lineage tracing data, first column should
 #' be lineage tracing barcodes, second column should be related cell type
-#' @param fate_use character, targeted fate cell type
+#' @param fate_use character, targeted fate cell type. if fate_use == '', this
+#' function will automatically select clone dominant cell type.
 #'
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples clone_fate_bias(fate_test)
 clone_fate_bias <- function(data,fate_use = ''){
 
   all_clone_size = nrow(data)
-  ct_all_clone_size = nrow(data[data[,2]==fate_use,])
   list_result = list()
 
   for (i in unique(data[,1])) {
+
+    ### select dominant fate
+    if (fate_use == '') {
+      freq = as.data.frame(table(data[data[,1]==i,]))
+      freq = freq[order(freq[,2],decreasing = T),]
+      fate_use = as.character(freq[1,2])
+      print(fate_use)
+    }
+    ct_all_clone_size = nrow(data[data[,2]==fate_use,])
     data_clone = data[data[,1]==i,]
     clone_size = nrow(data_clone)
     clone_ct_size = nrow(data_clone[data_clone[,2]==fate_use,])
@@ -192,15 +196,16 @@ clone_fate_bias <- function(data,fate_use = ''){
                              )
                             )$p.value
       FDR = p.adjust(p_val, method = "fdr")
-      list_result[[i]] = c(i,clone_size,fate_ratio,p_val,FDR)
+      list_result[[as.character(i)]] = c(i,fate_use,clone_size,
+                                         fate_ratio,p_val,FDR)
     }
   }
 
   result_df = as.data.frame(t(as.data.frame(list_result)))
-  colnames(result_df) = c('clone_name','clone_size','fate_ratio',
+  colnames(result_df) = c('clone_name','fate_use','clone_size','fate_ratio',
                           'pvalue','fdr')
   result_df = result_df[order(result_df[,5]),]
-  result_df = result_df[result_df[,3]>0,]
+  result_df = result_df[result_df[,4]>0,]
   return(result_df)
 }
 
