@@ -170,7 +170,7 @@ cell_type_fate_similartiy <- function(data,idx='celltype',method='spearman',
 #'
 #' @examples clone_fate_bias(fate_test)
 clone_fate_bias <- function(data,fate_use = ''){
-
+  data = data[!is.na(data[,1]),]
   all_clone_size = nrow(data)
   list_result = list()
 
