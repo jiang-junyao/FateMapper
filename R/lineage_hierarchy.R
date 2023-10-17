@@ -20,8 +20,7 @@ fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
                          cluster_rows=F,cluster_cols=T){
   data = data[!is.na(data[,1]),]
   lineage_use = unique(data[,idx])
-  freq_list = list()
-  for (i in unique(data$barcodes)) {
+  freq_list <- purrr::map(unique(data$barcodes),function(i){
     data_use = data[data$barcodes==i,]
     freq = as.data.frame(table(data_use$celltype))
     freq$Var1 = as.character(freq$Var1)
@@ -32,11 +31,11 @@ fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
     freq = rbind(freq,lineage_absent_df)
     rownames(freq) = freq$Var1
     freq = freq[lineage_use,]
-    freq_list[[as.character(i)]] = as.data.frame(t(data.frame(freq$Freq)))
-  }
+    return(as.data.frame(t(data.frame(freq$Freq))))
+  })
 
   freq_df = do.call(dplyr::bind_rows,freq_list)
-  rownames(freq_df) = names(freq_list)
+  rownames(freq_df) = unique(data$barcodes)
   colnames(freq_df) = lineage_use
 
   col<- rev(colorRampPalette(c("#cc0000", "#FFff00",'#66ccff','#000066'))(50))
