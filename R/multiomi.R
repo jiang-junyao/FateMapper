@@ -19,7 +19,7 @@ plot_clone_embedding <- function(barcode_use,pbmc,colors=c(rgb(200/255,200/255,2
   barcode_anno[is.na(pbmc$barcodes)] = 'no barcode'
   for (i in 1:length(colnames(pbmc))) {
     if (pbmc@meta.data$barcodes[i] %in% barcode_use) {
-      barcode_anno[i] = paste0('select_barcode:',pbmc@meta.data$cell_fate[i])
+      barcode_anno[i] = paste0('select_barcode:',pbmc@meta.data$barcodes[i])
     }
   }
   pbmc[['Barcode_family']]=barcode_anno
