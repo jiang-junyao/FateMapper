@@ -7,7 +7,8 @@
 #' @export
 #'
 #' @examples
-plot_clone_embedding <- function(barcode_use,pbmc,colors=c(rgb(200/255,200/255,200/255),
+plot_clone_embedding <- function(barcode_use,pbmc,data_type = 'metadata',
+                                        colors=c(rgb(200/255,200/255,200/255),
                                                         rgb(230/255,230/255,230/255),
                                                         rgb(239/255,153/255,81/255),
                                                         rgb(91/255,166/255,218/255),
@@ -15,21 +16,36 @@ plot_clone_embedding <- function(barcode_use,pbmc,colors=c(rgb(200/255,200/255,2
 )){
   ### pbmc is seurat object need cell_fate in metadata
   ### barcode_use is vector
-  barcode_anno = rep('other barcode',ncol(pbmc))
-  barcode_anno[is.na(pbmc$barcodes)] = 'no barcode'
-  for (i in 1:length(colnames(pbmc))) {
-    if (pbmc@meta.data$barcodes[i] %in% barcode_use) {
-      barcode_anno[i] = paste0('select_barcode:',pbmc@meta.data$barcodes[i])
-    }
+  if (data_type=='seurat') {
+      barcode_anno = rep('other barcode',ncol(pbmc))
+      barcode_anno[is.na(pbmc$barcodes)] = 'no barcode'
+      for (i in 1:length(colnames(pbmc))) {
+        if (pbmc@meta.data$barcodes[i] %in% barcode_use) {
+          barcode_anno[i] = paste0('select_barcode:',pbmc@meta.data$barcodes[i])
+        }
+      }
+      pbmc[['Barcode_family']]=barcode_anno
+      coor = as.data.frame(pbmc@reductions$umap@cell.embeddings)
+      coor$barcode_type = pbmc@meta.data$Barcode_family
+      coor1 = coor[coor$barcode_type %in% c('other barcode','no barcode'),]
+      coor2 = coor[!coor$barcode_type %in% c('other barcode','no barcode'),]
+      ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point(data=coor1,size=1)+
+        geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_void()+
+        scale_color_manual(values = colors)
+  }else if(data_type=='metadata'){
+    barcode_anno = rep('other barcode',nrow(pbmc))
+    barcode_anno[is.na(pbmc$barcodes)] = 'no barcode'
+    idx <- which(pbmc$barcodes %in% barcode_use)
+    barcode_anno[idx] <- paste0("select_barcode:",pbmc$cell_fate[idx])
+    coor = as.data.frame(pbmc[,1:2])
+    coor$barcode_type = barcode_anno
+    coor1 = coor[coor$barcode_type %in% c('other barcode','no barcode'),]
+    coor2 = coor[!coor$barcode_type %in% c('other barcode','no barcode'),]
+    ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point(data=coor1,size=1)+
+      geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_void()+
+      scale_color_manual(values = colors)
   }
-  pbmc[['Barcode_family']]=barcode_anno
-  coor = as.data.frame(pbmc@reductions$umap@cell.embeddings)
-  coor$barcode_type = pbmc@meta.data$Barcode_family
-  coor1 = coor[coor$barcode_type %in% c('other barcode','no barcode'),]
-  coor2 = coor[!coor$barcode_type %in% c('other barcode','no barcode'),]
-  ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point(data=coor1,size=1)+
-    geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_void()+
-    scale_color_manual(values = colors)
+
 }
 
 multi_relationship = function(pbmc){
