@@ -15,9 +15,9 @@
 #' heatmap
 #' @export
 #'
-#' @examples fate_ct_heatmap(fate_test)
+#' @examples fate_mapping(fate_test)
 fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
-                         cluster_rows=F,cluster_cols=T){
+                         cluster_rows=F,cluster_cols=T,...){
   data = data[!is.na(data[,1]),]
   lineage_use = unique(data[,idx])
   freq_list <- purrr::map(unique(data$barcodes),function(i){
@@ -43,7 +43,7 @@ fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
     freq_df = freq_df[,order_use]
   }
   pheatmap::pheatmap(log10(freq_df+0.0001),show_rownames =show_row,color = col
-                     ,cluster_rows = cluster_rows,cluster_cols = cluster_cols)
+                     ,cluster_rows = cluster_rows,cluster_cols = cluster_cols,...)
 
   return(freq_df)
 }
@@ -117,6 +117,7 @@ fate_ct_col <- function(data,idx='cell_type',
 #' @examples cell_type_fate_similartiy(fate_test)
 cell_type_fate_similartiy <- function(data,idx='celltype',method='spearman',
                                    plot = TRUE,...){
+  col<- rev(colorRampPalette(c("#cc0000", "#FFff00",'#66ccff','#000066'))(50))
   lineage_use = unique(data[,idx])
   sample_similarity_list = list()
   for (i in lineage_use) {
@@ -149,9 +150,8 @@ cell_type_fate_similartiy <- function(data,idx='celltype',method='spearman',
   sample_similarity_df = sample_similarity_df[,-1]
   sample_similarity_df[is.na(sample_similarity_df)]=0
   if (plot) {
-    pheatmap::pheatmap(sample_similarity_df,...)
+    pheatmap::pheatmap(sample_similarity_df,color = col,...)
   }
-  return(sample_similarity_df)
 
 }
 
