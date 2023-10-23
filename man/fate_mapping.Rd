@@ -10,7 +10,8 @@ fate_mapping(
   order_use = NULL,
   show_row = T,
   cluster_rows = F,
-  cluster_cols = T
+  cluster_cols = T,
+  ...
 )
 }
 \arguments{
@@ -23,13 +24,13 @@ be lineage tracing barcodes, second column should be related cell type}
 
 \item{cluster_cols}{boolean values determining if cols should be clustered}
 
+\item{...}{other pheatmap parameters}
+
 \item{show_rownames}{vector,indicating the order of cell types in the heatmap.}
 
 \item{col}{heatmap colors}
 
 \item{cluster_row}{boolean values determining if rows should be clustered}
-
-\item{...}{other pheatmap parameters}
 }
 \value{
 heatmap
@@ -38,5 +39,5 @@ heatmap
 plot heatmap for lineage tracing barcodes in each cell type
 }
 \examples{
-fate_ct_heatmap(fate_test)
+fate_mapping(fate_test)
 }

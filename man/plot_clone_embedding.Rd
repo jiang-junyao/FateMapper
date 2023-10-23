@@ -14,7 +14,7 @@ plot_clone_embedding(
 \arguments{
 \item{barcode_use}{vector, indicating barcodes for ploting}
 
-\item{pbmc}{seurat object}
+\item{pbmc}{seurat object or dataframe}
 }
 \description{
 Title
