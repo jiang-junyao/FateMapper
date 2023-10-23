@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-plot_clone_embedding <- function(barcode_use,pbmc,
+plot_clone_embedding <- function(barcode_use,pbmc,reduction = 'umap',
                                         colors=c(rgb(200/255,200/255,200/255),
                                                         rgb(230/255,230/255,230/255),
                                                         rgb(239/255,153/255,81/255),
@@ -25,7 +25,8 @@ plot_clone_embedding <- function(barcode_use,pbmc,
         }
       }
       pbmc[['Barcode_family']]=barcode_anno
-      coor = as.data.frame(pbmc@reductions$umap@cell.embeddings)
+      coor = as.data.frame(pbmc@reductions[[reduction]]@cell.embeddings)
+      colnames(coor) = c('UMAP_1','UMAP_2')
       coor$barcode_type = pbmc@meta.data$Barcode_family
       coor1 = coor[coor$barcode_type %in% c('other barcode','no barcode'),]
       coor2 = coor[!coor$barcode_type %in% c('other barcode','no barcode'),]
