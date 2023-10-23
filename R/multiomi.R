@@ -1,13 +1,13 @@
 #' Title
 #'
 #' @param barcode_use vector, indicating barcodes for ploting
-#' @param pbmc seurat object
+#' @param pbmc seurat object or dataframe
 #'
 #' @return
 #' @export
 #'
 #' @examples
-plot_clone_embedding <- function(barcode_use,pbmc,data_type = 'metadata',
+plot_clone_embedding <- function(barcode_use,pbmc,
                                         colors=c(rgb(200/255,200/255,200/255),
                                                         rgb(230/255,230/255,230/255),
                                                         rgb(239/255,153/255,81/255),
@@ -16,7 +16,7 @@ plot_clone_embedding <- function(barcode_use,pbmc,data_type = 'metadata',
 )){
   ### pbmc is seurat object need cell_fate in metadata
   ### barcode_use is vector
-  if (data_type=='seurat') {
+  if ('Seurat' %in% class(pbmc)) {
       barcode_anno = rep('other barcode',ncol(pbmc))
       barcode_anno[is.na(pbmc$barcodes)] = 'no barcode'
       for (i in 1:length(colnames(pbmc))) {
@@ -32,7 +32,7 @@ plot_clone_embedding <- function(barcode_use,pbmc,data_type = 'metadata',
       ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point(data=coor1,size=1)+
         geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_void()+
         scale_color_manual(values = colors)
-  }else if(data_type=='metadata'){
+  }else if(any(c('data.frame','tbl_df') %in% class(pbmc))){
     barcode_anno = rep('other barcode',nrow(pbmc))
     barcode_anno[is.na(pbmc$barcodes)] = 'no barcode'
     idx <- which(pbmc$barcodes %in% barcode_use)
@@ -44,6 +44,8 @@ plot_clone_embedding <- function(barcode_use,pbmc,data_type = 'metadata',
     ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point(data=coor1,size=1)+
       geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_void()+
       scale_color_manual(values = colors)
+  }else{
+    stop('Error,please check input data class, only accept seurat and dataframe object')
   }
 
 }
