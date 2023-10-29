@@ -90,14 +90,15 @@ sidebar <- dashboardSidebar(
     sidebarMenu(
         menuItem("Home", tabName = "home"),
         menuItem("Search", tabName = "look_data"),
-        menuItem("Results", tabName = "show_plot",
-                 menuSubItem("UMAP", tabName = "umap", icon = icon("angle-right")),
-                 menuSubItem("fate_bias", tabName = "fate_bias", icon = icon("angle-right"))
-        ),
+        menuItem("Results", tabName = "show_plot"),
         
         
-        menuItem("Online tools", tabName = "tools"),
+        menuItem("Online tools", tabName = "tools",
+                 menuSubItem("tools1", tabName = "tools1", icon = icon("angle-right")),
+                 menuSubItem("tools2", tabName = "tools2", icon = icon("angle-right"))
+                 ),
         menuItem("Tutorials", tabName = "tutorials"),
+        menuItem("Download", tabName = "Download"),
         menuItem("Contact", tabName = "Contact"),
         div(style="text-align:center")
     )
@@ -202,7 +203,7 @@ body <- dashboardBody(
                 )
         ),
         ##Results umap------
-        tabItem(tabName = "umap",
+        tabItem(tabName = "show_plot",
                 fluidRow(            
                     box(
                         title =  h2('Select dataset'),
@@ -253,6 +254,22 @@ body <- dashboardBody(
         
         
         
+        ##Online tools---------
+        tabItem(tabName = "tools1",
+                fluidPage(
+                    box(
+                        title = h2('Online tools'),
+                        solidHeader = FALSE, 
+                        status = "success",
+                        width = 12,
+                        height = NULL,
+                        style = "font-size: 20px;display: flex;align-items: center;"
+                        ,
+                        fileInput("upload_1", NULL, buttonLabel = "Upload CSV metadata...", multiple = FALSE,accept = c(".xls", ".xlsx"))
+                        
+                    )
+                )
+        ),
         ##tutorials---------
         tabItem(tabName = "tutorials",
                 fluidPage(
@@ -388,16 +405,29 @@ server <- function(input, output,session = session) {
         server = FALSE,
         options = list(
             dom = 'Bftip', 
-            buttons = list("searchPanes"),
             columnDefs = list(
-                list( searchPanes = list(show = FALSE), targets = c(1,3:6)),
+                list(searchPanes = list(show = FALSE), targets = c(1,3:6)),
                 list(targets = c(1:6), className = 'dt-center')
-                ),
+            ),
+            buttons = list(
+                'searchPanes'
+            ),
+            language = list(searchPanes = list(collapse = 'Select fata bias')),
             autoWidth = TRUE,
             pageLength = 10,
             searchHighlight = TRUE,
             lengthChange = FALSE)
     )
+    
+###online tools
+    tools1_data <- reactive({
+        req(input$upload_1)
+        ext <- tools::file_ext(input$upload_1$name)
+        switch(ext,
+               csv = read.csv(input$upload_1$datapath),
+               validate("Invalid file; Please upload a .csv file")
+        )
+    })
     
     
     # output$download_umap_plot <- downloadHandler(
