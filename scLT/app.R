@@ -239,23 +239,17 @@ body <- dashboardBody(
                                  ),
                         tabPanel("cell_type_similarity", 
                                  div(plotlyOutput("cell_type_similarity_plot"),style = "margin-left: auto; margin-right: auto;")
-                                                             )
+                                                             ),
+                        tabPanel('fate_bias',
+                                div(class = 'fate_bias_table',style = "font-size:150%",
+                                    dataTableOutput('look_fate_bias',width = "100%"))
+                        )
+                        
                     ),
                 )
                 
         ),
         ##
-        tabItem(tabName = "fate_bias",
-                box(
-                    title =  h2('show_fate_bias'),
-                    status = "success",
-                    solidHeader = FALSE,
-                    width = 12,
-                    align = "middle",
-                    div(dataTableOutput('look_fate_bias',width = "100%"),style = "font-size:150%")
-                    
-                )
-        ),
         
         
         
@@ -361,6 +355,9 @@ server <- function(input, output,session = session) {
         req(input$Select_dataset)
         fate_bias <-  readRDS(paste0('clone_fate_bias/',unique(Select_dataseted()$dataset),'.rds'))
         fate_bias <- as_tibble(purrr::reduce(fate_bias,bind_rows))
+        fate_bias$fate_ratio <- round(as.numeric(fate_bias$fate_ratio),4)
+        fate_bias$pvalue <- round(as.numeric(fate_bias$pvalue),4)
+        fate_bias$fdr <- round(as.numeric(fate_bias$fdr),4)
         return(fate_bias)
     })
     output$show_umap1 <- renderUI({
@@ -383,9 +380,19 @@ server <- function(input, output,session = session) {
     })
     
     output$look_fate_bias = renderDT(
-        fate_bias(), options = list(
+        fate_bias(),
+        extensions = c('Select', 'SearchPanes',"Buttons"),
+        selection = 'none',
+        server = FALSE,
+        options = list(
+            dom = 'Bftip', 
+            buttons = list("searchPanes"),
+            columnDefs = list(
+                list( searchPanes = list(show = FALSE), targets = c(1,3:6)),
+                list(targets = c(1:6), className = 'dt-center')
+                ),
             autoWidth = TRUE,
-            pageLength = 14,
+            pageLength = 10,
             searchHighlight = TRUE,
             lengthChange = FALSE)
     )
