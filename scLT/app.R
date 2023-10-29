@@ -332,7 +332,9 @@ server <- function(input, output,session = session) {
     })
     ##search-----
     output$core_table = renderDT(
-        coretable, options = list(
+        coretable, 
+        rownames= FALSE,
+        options = list(
             autoWidth = TRUE,
             pageLength = 13,
             searchHighlight = TRUE,
