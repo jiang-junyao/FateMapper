@@ -7,7 +7,7 @@ Authors@R:
            family = "Jiang",
            role = c("aut", "cre"),
            email = "jiangjunyao789@163.com"),
-      person("Yunhui Kong", role ="ctb",email = "kongyunhui1@gamil.com")
+      person("Yunhui Kong", role =c("aut","ctb"),email = "kongyunhui1@gamil.com")
       )
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
