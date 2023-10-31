@@ -16,7 +16,13 @@
     <loc>/LICENSE.html</loc>
   </url>
   <url>
+    <loc>/reference/cell_type_fate_similartiy.html</loc>
+  </url>
+  <url>
     <loc>/reference/cell_type_hier_heatmap.html</loc>
+  </url>
+  <url>
+    <loc>/reference/clone_fate_bias.html</loc>
   </url>
   <url>
     <loc>/reference/fate_ct_col.html</loc>
@@ -25,12 +31,21 @@
     <loc>/reference/fate_ct_heatmap.html</loc>
   </url>
   <url>
+    <loc>/reference/fate_mapping.html</loc>
+  </url>
+  <url>
     <loc>/reference/hello.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/plot_clone_embedding.html</loc>
+  </url>
+  <url>
     <loc>/reference/polt_barcode_umap.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sample_repeats.html</loc>
   </url>
 </urlset>
