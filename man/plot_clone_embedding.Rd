@@ -7,6 +7,7 @@
 plot_clone_embedding(
   barcode_use,
   pbmc,
+  reduction = "umap",
   colors = c(rgb(200/255, 200/255, 200/255), rgb(230/255, 230/255, 230/255), rgb(239/255,
     153/255, 81/255), rgb(91/255, 166/255, 218/255), rgb(217/255, 83/255, 25/255))
 )

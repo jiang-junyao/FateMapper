@@ -43,7 +43,8 @@ fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
     freq_df = freq_df[,order_use]
   }
   pheatmap::pheatmap(log10(freq_df+0.0001),show_rownames =show_row,color = col
-                     ,cluster_rows = cluster_rows,cluster_cols = cluster_cols,...)
+                     ,cluster_rows = cluster_rows,cluster_cols = cluster_cols,
+                     border_color = NA,...)
 
   return(freq_df)
 }
@@ -116,7 +117,7 @@ fate_ct_col <- function(data,idx='cell_type',
 #'
 #' @examples cell_type_fate_similartiy(fate_test)
 cell_type_fate_similartiy <- function(data,idx='celltype',method='spearman',
-                                   plot = TRUE,...){
+                                   plot = TRUE,out_similar_mt = FALSE,...){
   col<- rev(colorRampPalette(c("#cc0000", "#FFff00",'#66ccff','#000066'))(50))
   lineage_use = unique(data[,idx])
   sample_similarity_list = list()
@@ -152,7 +153,9 @@ cell_type_fate_similartiy <- function(data,idx='celltype',method='spearman',
   if (plot) {
     pheatmap::pheatmap(sample_similarity_df,color = col,...)
   }
-
+  if (out_similar_mt) {
+    return(sample_similarity_df)
+  }
 }
 
 
@@ -208,3 +211,23 @@ clone_fate_bias <- function(data,fate_use = ''){
   return(result_df)
 }
 
+#' Build lineage tree based on Neighbor Joining
+#'
+#' @param data data.frame, indicating lineage tracing data, first column should
+#' be lineage tracing barcodes, second column should be related cell type
+#' @param idx column name of cell type
+#' @param method character, indicating which correlation coefficient
+#' (or covariance) is to be computed. One of "pearson", "kendall",
+#' or "spearman (default)": can be abbreviated.
+#' @param ... parameter of plot function
+#' @importFrom ape nj
+#' @return
+#' @export
+#'
+#' @examples
+lineage_tree <- function(data,idx='celltype',method='spearman',...){
+  ct_similarity = cell_type_fate_similartiy(data,out_similar_mt = T,plot = F)
+  dist_mt = as.dist(ct_similarity)
+  nj.tree <- ape::nj(dist_mt)
+  plot(nj.tree, ...)
+}

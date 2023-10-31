@@ -1,0 +1,61 @@
+---
+title: "blood_analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{blood_analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+### Load package and data
+```{r setup,warning=FALSE,message=FALSE}
+library(FateMapper)
+load(system.file("extdata", "blood_csc.rda", package = "FateMapper"))
+```
+
+### Data introduction
+The blood lineage tracing dataset is represented as a dataframe with four columns. Each row in the dataset corresponds to a single cell, where the first and second columns contain the embedding information extracted from scRNA-seq data. The third column provides the cell-related barcode derived from lineage tracing data. Lastly, the fourth column represents the annotated cell type of each cell.
+```{r}
+head(cell_fate)
+```
+
+### clone profile
+Firstly, we map the clone expression in pseudo-bulk cell types through fate_mapping() function
+```{r}
+barcode_freq = fate_mapping(cell_fate,show_row = F,cluster_cols = F,order_use = 
+                              c('HSC','MPP','CMP','CLP'))
+```
+
+### cell type similarity analysis based on clone expression
+Next, we calculate the spearman correlation between each cell type based on clone expression to estimate the lineage relationships between cell types.
+```{r,message=FALSE}
+ct_similarity = cell_type_fate_similartiy(cell_fate[,3:4])
+```
+
+### Building lineage tree
+Building lineage tree based on neighbor-joining method.
+```{r}
+lineage_tree(cell_fate[,3:4])
+```
+
+### Clone fate bias analysis
+Then, we calculate the clone fate bias based on Fisher-Exact test. Fate bias represent which fate/cell_type the clone is enriched for (e.g. Which cell type does this clone mainly develop into).
+In this analysis we calculate the clone fate bias for CMP
+```{r}
+CMP_bias = clone_fate_bias(cell_fate[,3:4],fate_use = 'CMP')
+head(CMP_bias)
+```
+
+### Clone embedding
+Then we visualize the CMP bias clone on the embedding plot
+```{r}
+plot_clone_embedding(CMP_bias[3,1],cell_fate,colors = c(rgb(200/255,200/255,200/255),
+                                             rgb(239/255,153/255,81/255)))
+```
