@@ -6,7 +6,9 @@ Authors@R:
     c(person(given = "Junyao",
            family = "Jiang",
            role = c("aut", "cre"),
-           email = "jiangjunyao789@163.com"))
+           email = "jiangjunyao789@163.com"),
+      person("Yunhui Kong", role ="ctb",email = "kongyunhui1@gamil.com")
+      )
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
@@ -23,6 +25,7 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
-    pheatmap
+    pheatmap,
+    ape
 RoxygenNote: 7.2.1
 VignetteBuilder: knitr
