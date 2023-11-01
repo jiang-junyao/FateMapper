@@ -2,15 +2,3 @@ url: ~
 template:
   bootstrap: 5
 
-
-navbar:
-  title: ~
-  type: default
-  left:
-    - text: Reference
-      href: reference/index.html
-    - text: Tutorial
-      menu:
-      - text: Using FateMapper to analyze scLT-seq data from blood
-        href: articles/blood_analysis.html
-      - text: "-------"
