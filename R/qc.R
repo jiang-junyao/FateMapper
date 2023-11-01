@@ -14,7 +14,8 @@ plot_barcode_frequency <- function(){
 
 }
 
-#' Title
+#' Calculate the spearman correlation of select feature between each sample to
+#' estimate consistency of technical replicates
 #'
 #' @param df_sample data.frame, indicating lineage tracing data, first column should
 #' be sample, second column should be interested feature

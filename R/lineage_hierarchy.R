@@ -42,7 +42,12 @@ fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
   if (!is.null(order_use)) {
     freq_df = freq_df[,order_use]
   }
-  pheatmap::pheatmap(log10(freq_df+0.0001),show_rownames =show_row,color = col
+  freq_df_ratio = apply(freq_df, 1, function(x){
+    row_sum = sum(x)
+    print(length(x))
+    return(x/row_sum)
+  })
+  pheatmap::pheatmap(t(freq_df_ratio),show_rownames =show_row,color = col
                      ,cluster_rows = cluster_rows,cluster_cols = cluster_cols,
                      border_color = NA,...)
 
