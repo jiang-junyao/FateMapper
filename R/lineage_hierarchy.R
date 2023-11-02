@@ -44,7 +44,6 @@ fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
   }
   freq_df_ratio = apply(freq_df, 1, function(x){
     row_sum = sum(x)
-    print(length(x))
     return(x/row_sum)
   })
   pheatmap::pheatmap(t(freq_df_ratio),show_rownames =show_row,color = col
@@ -214,6 +213,28 @@ clone_fate_bias <- function(data,fate_use = ''){
   result_df = result_df[order(result_df[,5]),]
   result_df = result_df[result_df[,4]>0,]
   return(result_df)
+}
+
+#' Plot summary of fate bias analysis
+#'
+#' @param fate_bias fata bias analysis result from function clone_fate_bias
+#'
+#' @return
+#' @export
+#'
+#' @examples
+fate_bias_summary <- function(fate_bias){
+  fate_bias$pvalue = as.numeric(fate_bias$pvalue)
+  fate_bias$fdr = as.numeric(fate_bias$fdr)
+  fate_bias$fate_ratio = as.numeric(fate_bias$fate_ratio)
+  fate_bias = fate_bias[order(fate_bias$fdr),]
+  fate_bias$log10FDR = -log10(fate_bias$fdr)
+  fate_bias$clone_bias_type = ifelse(fate_bias$log10FDR > 1.30103,
+                                     'significant clone',
+                                    'insignificant clone')
+  ggplot(fate_bias,aes(x=fate_ratio,y=log10FDR,color=clone_bias_type))+
+    geom_point(size=1.7)+theme_classic()+xlab('fate ratio')+ylab('-log10 FDR')+
+    scale_color_manual(values = c('#3B9AB2',"#DD8D29"))
 }
 
 #' Build lineage tree based on Neighbor Joining

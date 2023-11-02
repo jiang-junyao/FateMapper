@@ -2,6 +2,7 @@
 
 export(cell_type_fate_similartiy)
 export(clone_fate_bias)
+export(fate_bias_summary)
 export(fate_ct_col)
 export(fate_mapping)
 export(lineage_tree)

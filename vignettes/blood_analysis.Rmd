@@ -52,7 +52,9 @@ In this analysis we calculate the clone fate bias for CMP
 CMP_bias = clone_fate_bias(cell_fate[,3:4],fate_use = 'CMP')
 head(CMP_bias)
 ```
-
+```{r}
+fate_bias_summary(CMP_bias)
+```
 ### Clone embedding
 Then we visualize the CMP bias clone on the embedding plot
 ```{r}

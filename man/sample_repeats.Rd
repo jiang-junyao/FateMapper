@@ -2,7 +2,8 @@
 % Please edit documentation in R/qc.R
 \name{sample_repeats}
 \alias{sample_repeats}
-\title{Title}
+\title{Calculate the spearman correlation of select feature between each sample to
+estimate consistency of technical replicates}
 \usage{
 sample_repeats(df_sample)
 }
@@ -11,5 +12,6 @@ sample_repeats(df_sample)
 be sample, second column should be interested feature}
 }
 \description{
-Title
+Calculate the spearman correlation of select feature between each sample to
+estimate consistency of technical replicates
 }
