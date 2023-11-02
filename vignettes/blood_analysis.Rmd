@@ -55,6 +55,7 @@ head(CMP_bias)
 ```{r}
 fate_bias_summary(CMP_bias)
 ```
+
 ### Clone embedding
 Then we visualize the CMP bias clone on the embedding plot
 ```{r}

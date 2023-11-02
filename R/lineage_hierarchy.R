@@ -232,9 +232,26 @@ fate_bias_summary <- function(fate_bias){
   fate_bias$clone_bias_type = ifelse(fate_bias$log10FDR > 1.30103,
                                      'significant clone',
                                     'insignificant clone')
-  ggplot(fate_bias,aes(x=fate_ratio,y=log10FDR,color=clone_bias_type))+
+  ### show top clone
+  if (nrow(fate_bias[fate_bias$clone_bias_type=='significant clone',])>10) {
+    top_clone = fate_bias$clone_name[1:10]
+  }else{
+    top_clone = fate_bias$clone_name[fate_bias$clone_bias_type =='significant clone']
+  }
+  clone_label = c()
+  for (i in fate_bias$clone_name) {
+    if (i%in%top_clone) {
+      clone_label = c(clone_label,i)
+    }else{
+      clone_label = c(clone_label,'')
+    }
+  }
+  fate_bias$label = clone_label
+
+  ggplot(fate_bias,aes(x=fate_ratio,y=log10FDR,color=clone_bias_type,label=label))+
     geom_point(size=1.7)+theme_classic()+xlab('fate ratio')+ylab('-log10 FDR')+
-    scale_color_manual(values = c('#3B9AB2',"#DD8D29"))
+    scale_color_manual(values = c('#3B9AB2',"#DD8D29"))+
+    geom_text(color="grey20",size=3.5)
 }
 
 #' Build lineage tree based on Neighbor Joining
