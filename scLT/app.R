@@ -122,9 +122,8 @@ body <- dashboardBody(
                         solidHeader = TRUE,
                         width = 12,
                         height = NULL,
-                        style = "font-size: 20px;display: flex;align-items: center;"
-                        ,
-                        textOutput(outputId = "HOME_output_text")
+                        style = "font-size: 20px;display: flex;align-items: center;",
+                        uiOutput("HOME_output_text")
                     ),
                     box(
                         title = 'Species',
@@ -134,7 +133,7 @@ body <- dashboardBody(
                         height = NULL,
                         style = "font-size: 20px;margin: 0 auto;text-align:center;"
                         ,div(
-                            class = "box-content",
+                            class = "box-content",style = 'background:#FFFFFF;',
                             img(src = "pie_species.png",style = "max-width: 70%; max-height: 70%;")
                         )
 
@@ -145,8 +144,7 @@ body <- dashboardBody(
                         solidHeader = TRUE,
                         width = 4,
                         height = NULL,
-                        style = "font-size: 20px;margin: 0 auto;text-align:center;"
-                        ,
+                        style = "font-size: 20px;margin: 0 auto;text-align:center;background:#FFFFFF;",
                         img(src = "pie_tissue.png",style = "max-width: 70%; max-height: 670%;")
                     ),
                     box(
@@ -155,7 +153,7 @@ body <- dashboardBody(
                         solidHeader = TRUE,
                         width = 4,
                         height = NULL,
-                        style = "font-size: 20px;margin: 0 auto;text-align:center;"
+                        style = "font-size: 20px;margin: 0 auto;text-align:center;background:#FFFFFF;"
                         ,
                         img(src = "pie_tech.png",style = "max-width: 70%; max-height: 70%;")
                     ),
@@ -335,13 +333,14 @@ ui <-  dashboardPage(skin = "green",
 server <- function(input, output,session = session) {
 
     ##Home part----
-    output$HOME_output_text <- renderText({
-        c("scLtDB is a database of single-cell multiomics lineage tracing.  It encompasses a comprehensive collection of 30 manually curated datasets, each comprising well-annotated cell identities and barcodes.  These datasets span across three distinct species, encompassing seven diverse tissues, and feature the utilization of 16 different lineage tracing technologies. scLTdb provides:
-        <br/> 1.Browse single cell multiomics lineage tracing data, including single cell embedding, clone expression profile, lineage similarity among cell types, and lineage tree
-      2.Data search by species, tissue, and technologies
-      3.Interactive data exploration, e.g., clone fate bias for different cell types, and visualize clone on single cell embedding
-      4.Online tool to compare different datasets, and perform clone analysis
-      5.Download well processed seurat object",'\n','aa')
+    output$HOME_output_text <- renderUI({
+      div(p("scLtDB is a database of single-cell multiomics lineage tracing.It encompasses a comprehensive collection of 30 manually curated datasets, each comprising well-annotated cell identities and barcodes.These datasets span across three distinct species, encompassing seven diverse tissues, and feature the utilization of 16 different lineage tracing technologies.scLTdb provides:"),
+          p("1.Browse single cell multiomics lineage tracing data, including single cell embedding, clone expression profile, lineage similarity among cell types, and lineage tree"),
+          p("2.Data search by species, tissue, and technologies"),
+          p("3.Interactive data exploration, e.g., clone fate bias for different cell types, and visualize clone on single cell embedding"),
+          p("4.Online tool to compare different datasets, and perform clone analysis"),
+          p("5.Download well processed seurat object"),style ='display: inline;'
+      )
     })
     output$HOME_stat1 <- renderText({
         "HOME_stat1"
@@ -386,7 +385,7 @@ server <- function(input, output,session = session) {
     })
     output$show_umap1 <- renderUI({
         div(
-            img(src = paste0(unique(Select_dataseted()$dataset),'.png'),style = "max-width: 100%; max-height: 100%;")
+            img(src = paste0(unique(Select_dataseted()$Dataset),'.png'),style = "max-width: 100%; max-height: 100%;")
         )
     })
     ##
@@ -477,15 +476,16 @@ server <- function(input, output,session = session) {
         'Tutorials_text3'
     })
     output$contact_text1 <- renderUI({
-        div(tags$p("If your have any question, please contact:",style = "display: inline;"),
+        div(p("If your have any question, please contact:"),
             br(),
-            a("Junyao jiang:jyjiang@link.cuhk.edu.hk", href="jyjiang@link.cuhk.edu.hk",target='_blank',style = "display: inline;"),
-            tags$p("and",style = "display: inline;"),
-            a("Yunhui Kong:kongyunhui1@gmail.com", href="kongyunhui1@gmail.com",target='_blank',style = "display: inline;"),
+            a("Junyao jiang:jyjiang@link.cuhk.edu.hk", href="jyjiang@link.cuhk.edu.hk",target='_blank'),
+            p("and",style = "display: inline;"),
+            a("Yunhui Kong:kongyunhui1@gmail.com", href="kongyunhui1@gmail.com",target='_blank'),
             br(),
-            tags$p("If your used data from our database, please cite:",style = "display: inline;"),
+            p("If your used data from our database, please cite:"),
             br(),
-            a("IReNA: integrated regulatory network analysis of single-cell transcriptomes", href="https://www.sciencedirect.com/science/article/pii/S2589004222016315",target='_blank',style = "display: inline;"),
+            a("IReNA: integrated regulatory network analysis of single-cell transcriptomes", href="https://www.sciencedirect.com/science/article/pii/S2589004222016315",target='_blank'),
+            style = "display: inline;"
         )
     })
 
