@@ -376,7 +376,7 @@ server <- function(input, output,session = session) {
     })
     fate_bias <- reactive({
         req(input$Select_dataset)
-        fate_bias <-  readRDS(paste0('clone_fate_bias/',unique(Select_dataseted()$dataset),'.rds'))
+        fate_bias <-  readRDS(paste0('clone_fate_bias/',unique(input$Select_dataset),'.rds'))
         fate_bias <- as_tibble(purrr::reduce(fate_bias,bind_rows))
         fate_bias$fate_ratio <- round(as.numeric(fate_bias$fate_ratio),4)
         fate_bias$pvalue <- round(as.numeric(fate_bias$pvalue),4)
@@ -385,7 +385,7 @@ server <- function(input, output,session = session) {
     })
     output$show_umap1 <- renderUI({
         div(
-            img(src = paste0(unique(Select_dataseted()$Dataset),'.png'),style = "max-width: 100%; max-height: 100%;")
+            img(src = paste0(input$Select_dataset,'.png'),style = "max-width: 100%; max-height: 100%;")
         )
     })
     ##
@@ -479,7 +479,7 @@ server <- function(input, output,session = session) {
         div(p("If your have any question, please contact:"),
             br(),
             a("Junyao jiang:jyjiang@link.cuhk.edu.hk", href="jyjiang@link.cuhk.edu.hk",target='_blank'),
-            p("and",style = "display: inline;"),
+            p("and"),
             a("Yunhui Kong:kongyunhui1@gmail.com", href="kongyunhui1@gmail.com",target='_blank'),
             br(),
             p("If your used data from our database, please cite:"),
