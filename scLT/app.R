@@ -13,8 +13,8 @@ options(shiny.maxRequestSize=1024*1024^2)
 load('coretable.Rdata')
 obj_metadata_list <- readRDS('obj_metadata_list.rds')
 
-fate_mapping2 <- function (data, idx = "celltype", order_use = NULL, show_row = T, 
-          cluster_rows = F, cluster_cols = T) 
+fate_mapping2 <- function (data, idx = "celltype", order_use = NULL, show_row = T,
+          cluster_rows = F, cluster_cols = T)
 {
     data = data[!is.na(data[, 1]), ]
     lineage_use = unique(data[, idx])
@@ -24,7 +24,7 @@ fate_mapping2 <- function (data, idx = "celltype", order_use = NULL, show_row = 
         freq$Var1 = as.character(freq$Var1)
         freq = freq[freq$Freq != 0, ]
         lineage_absent = lineage_use[!lineage_use %in% as.character(freq$Var1)]
-        lineage_absent_df = data.frame(lineage_absent, rep(0, 
+        lineage_absent_df = data.frame(lineage_absent, rep(0,
                                                            length(lineage_absent)))
         colnames(lineage_absent_df) = colnames(freq)
         freq = rbind(freq, lineage_absent_df)
@@ -35,15 +35,15 @@ fate_mapping2 <- function (data, idx = "celltype", order_use = NULL, show_row = 
     freq_df = do.call(dplyr::bind_rows, freq_list)
     rownames(freq_df) = unique(data$barcodes)
     colnames(freq_df) = lineage_use
-    col <- rev(colorRampPalette(c("#cc0000", "#FFff00", "#66ccff", 
+    col <- rev(colorRampPalette(c("#cc0000", "#FFff00", "#66ccff",
                                   "#000066"))(50))
     if (!is.null(order_use)) {
         freq_df = freq_df[, order_use]
     }
     return(freq_df)
 }
-cell_type_fate_similartiy2 <- function (data, idx = "celltype", method = "spearman", plot = TRUE, 
-          ...) 
+cell_type_fate_similartiy2 <- function (data, idx = "celltype", method = "spearman", plot = TRUE,
+          ...)
 {
     lineage_use = unique(data[, idx])
     sample_similarity_list = list()
@@ -55,27 +55,27 @@ cell_type_fate_similartiy2 <- function (data, idx = "celltype", method = "spearm
             fre_all_all = as.data.frame(table(fre_all[, 2]))
             fre_all1 = as.data.frame(table(sample2[, 1]))
             fre_all_all1 = as.data.frame(table(fre_all1[, 2]))
-            overlapped_idx = intersect(sample1[, 1], sample2[, 
+            overlapped_idx = intersect(sample1[, 1], sample2[,
                                                              1])
             all_idx = union(sample1[, 1], sample2[, 1])
-            df_plot = data.frame(all_idx, rep(0, length(all_idx)), 
+            df_plot = data.frame(all_idx, rep(0, length(all_idx)),
                                  rep(0, length(all_idx)))
-            df_plot[, 2] = fre_all[match(df_plot$all_idx, fre_all[, 
+            df_plot[, 2] = fre_all[match(df_plot$all_idx, fre_all[,
                                                                   1]), 2]
-            df_plot[, 3] = fre_all1[match(df_plot$all_idx, fre_all1[, 
+            df_plot[, 3] = fre_all1[match(df_plot$all_idx, fre_all1[,
                                                                     1]), 2]
             colnames(df_plot)[2:3] = c(i, j)
             df_plot[is.na(df_plot)] = 0
-            sample_similarity = cor(df_plot[, 2], df_plot[, 
+            sample_similarity = cor(df_plot[, 2], df_plot[,
                                                           3], method = method)
-            sample_similarity_list[[paste0(i, "-", j)]] = data.frame(i, 
+            sample_similarity_list[[paste0(i, "-", j)]] = data.frame(i,
                                                                      j, sample_similarity)
         }
     }
     sample_similarity_df = do.call(dplyr::bind_rows, sample_similarity_list)
-    sample_similarity_df = reshape2::dcast(sample_similarity_df, 
+    sample_similarity_df = reshape2::dcast(sample_similarity_df,
                                            i ~ j)
-    rownames(sample_similarity_df) = sample_similarity_df[, 
+    rownames(sample_similarity_df) = sample_similarity_df[,
                                                           1]
     sample_similarity_df = sample_similarity_df[, -1]
     sample_similarity_df[is.na(sample_similarity_df)] = 0
@@ -91,8 +91,8 @@ sidebar <- dashboardSidebar(
         menuItem("Home", tabName = "home"),
         menuItem("Search", tabName = "look_data"),
         menuItem("Results", tabName = "show_plot"),
-        
-        
+
+
         menuItem("Online tools", tabName = "tools",
                  menuSubItem("tools1", tabName = "tools1", icon = icon("angle-right")),
                  menuSubItem("tools2", tabName = "tools2", icon = icon("angle-right"))
@@ -106,18 +106,18 @@ sidebar <- dashboardSidebar(
 
 
 body <- dashboardBody(
-    
+
     shinyDashboardThemes(theme = 'grey_light'),
-    tags$head( 
+    tags$head(
         tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
-    ), 
-    
+    ),
+
     tabItems(
         # home part------
         tabItem(tabName = "home",
                 fluidPage(
                     box(
-                        title = '13213',
+                        title = 'Introduction',
                         status = "primary",
                         solidHeader = TRUE,
                         width = 12,
@@ -127,7 +127,7 @@ body <- dashboardBody(
                         textOutput(outputId = "HOME_output_text")
                     ),
                     box(
-                        title = 'STAT1',
+                        title = 'Species',
                         status = "primary",
                         solidHeader = TRUE,
                         width = 4,
@@ -135,29 +135,29 @@ body <- dashboardBody(
                         style = "font-size: 20px;margin: 0 auto;text-align:center;"
                         ,div(
                             class = "box-content",
-                            textOutput(outputId = "HOME_stat1")
+                            img(src = "pie_species.png",style = "max-width: 70%; max-height: 70%;")
                         )
-                        
+
                     ),
                     box(
-                        title = 'STAT2',
+                        title = 'Tissue',
                         status = "primary",
                         solidHeader = TRUE,
                         width = 4,
                         height = NULL,
                         style = "font-size: 20px;margin: 0 auto;text-align:center;"
                         ,
-                        textOutput(outputId = "HOME_stat2")
+                        img(src = "pie_tissue.png",style = "max-width: 70%; max-height: 670%;")
                     ),
                     box(
-                        title = 'STAT3',
+                        title = 'Technology',
                         status = "primary",
                         solidHeader = TRUE,
                         width = 4,
                         height = NULL,
                         style = "font-size: 20px;margin: 0 auto;text-align:center;"
                         ,
-                        textOutput(outputId = "HOME_stat3")
+                        img(src = "pie_tech.png",style = "max-width: 70%; max-height: 70%;")
                     ),
                     box(div(
                         img(src = "intro_img.png",style = "max-width: 100%; max-height: 100%;")
@@ -168,13 +168,13 @@ body <- dashboardBody(
                     align = "middle",
                     style = 'background:#FFFFFF'
                     )
-                    
+
                 )
         ),
-        
-        
+
+
         # search part------
-        
+
         tabItem(tabName = "look_data",
                 fluidPage(
                     # box(
@@ -184,7 +184,7 @@ body <- dashboardBody(
                     #     width = 12,
                     #     height = NULL,
                     #     style = "font-size: 20px;margin: 0 auto;text-align:center;"
-                    # 
+                    #
                     # )
                     # ,
                     box(
@@ -194,7 +194,7 @@ body <- dashboardBody(
                         width = 12,
                         align = "middle",
                         div(dataTableOutput('core_table',width = "100%"),style = "font-size:150%")
-                        
+
                     )
                 ),
                 tags$style(type="text/css",
@@ -204,7 +204,7 @@ body <- dashboardBody(
         ),
         ##Results umap------
         tabItem(tabName = "show_plot",
-                fluidRow(            
+                fluidRow(
                     box(
                         title =  h2('Select dataset'),
                         status = "warning",
@@ -235,38 +235,38 @@ body <- dashboardBody(
                     tabBox(
                         title = "1231231",
                         id = "tabset1", height = "600px",
-                        tabPanel("Barcode_count", 
+                        tabPanel("Barcode_count",
                                  div(plotlyOutput("barcode_count_plot"),style = "margin-left: auto; margin-right: auto;")
                                  ),
-                        tabPanel("cell_type_similarity", 
+                        tabPanel("cell_type_similarity",
                                  div(plotlyOutput("cell_type_similarity_plot"),style = "margin-left: auto; margin-right: auto;")
                                                              ),
                         tabPanel('fate_bias',
                                 div(class = 'fate_bias_table',style = "font-size:150%",
                                     dataTableOutput('look_fate_bias',width = "100%"))
                         )
-                        
+
                     ),
                 )
-                
+
         ),
         ##
-        
-        
-        
+
+
+
         ##Online tools---------
         tabItem(tabName = "tools1",
                 fluidPage(
                     box(
                         title = h2('Online tools'),
-                        solidHeader = FALSE, 
+                        solidHeader = FALSE,
                         status = "success",
                         width = 12,
                         height = NULL,
                         style = "font-size: 20px;display: flex;align-items: center;"
                         ,
                         fileInput("upload_1", NULL, buttonLabel = "Upload CSV metadata...", multiple = FALSE,accept = c(".xls", ".xlsx"))
-                        
+
                     )
                 )
         ),
@@ -310,7 +310,7 @@ body <- dashboardBody(
                 fluidPage(
                     box(
                         title = h2('Contact'),
-                        solidHeader = FALSE, 
+                        solidHeader = FALSE,
                         status = "success",
                         width = 12,
                         height = NULL,
@@ -318,12 +318,12 @@ body <- dashboardBody(
                         ,
                         br(),
                         uiOutput("contact_text1")
-                        
+
                     )
                 )
         )
-        
-        
+
+
     )
 )
 ui <-  dashboardPage(skin = "green",
@@ -336,7 +336,12 @@ server <- function(input, output,session = session) {
 
     ##Home part----
     output$HOME_output_text <- renderText({
-        "The disease related cell type database (DRCTdb) is a database decodes underlying regulations of genetic disease SNPs by single-cell multiomics data with multi-functional and user-friendly interface.  In DRCTdb, we collected and processed overall 2.6 million cells with transcriptome and epigenetics information from 15 studies. We also integrated GWAS data of 48 genetic diseases with single-cell multiomics data to identify disease related cell types. We will continuously enhance the DRCTdb with the advancements in single-cell multiomics. As new single-cell multiomics data becomes available, we will regularly update and upgrade the DRCTdb to ensure its relevance and comprehensiveness."
+        c("scLtDB is a database of single-cell multiomics lineage tracing.  It encompasses a comprehensive collection of 30 manually curated datasets, each comprising well-annotated cell identities and barcodes.  These datasets span across three distinct species, encompassing seven diverse tissues, and feature the utilization of 16 different lineage tracing technologies. scLTdb provides:
+        <br/> 1.Browse single cell multiomics lineage tracing data, including single cell embedding, clone expression profile, lineage similarity among cell types, and lineage tree
+      2.Data search by species, tissue, and technologies
+      3.Interactive data exploration, e.g., clone fate bias for different cell types, and visualize clone on single cell embedding
+      4.Online tool to compare different datasets, and perform clone analysis
+      5.Download well processed seurat object",'\n','aa')
     })
     output$HOME_stat1 <- renderText({
         "HOME_stat1"
@@ -349,7 +354,7 @@ server <- function(input, output,session = session) {
     })
     ##search-----
     output$core_table = renderDT(
-        coretable, 
+        coretable,
         rownames= FALSE,
         options = list(
             autoWidth = TRUE,
@@ -359,7 +364,7 @@ server <- function(input, output,session = session) {
     )
     ##results-----
     #unique(coretable$Dataset)
-    
+
     Select_dataseted <- reactive({
         req(input$Select_dataset)
         obj_metadata_list[[input$Select_dataset]]
@@ -390,21 +395,21 @@ server <- function(input, output,session = session) {
         plot_ly(x=colnames(log10(barcode_count_plot + 1e-04)), color =  rev(colorRampPalette(c("#cc0000", "#FFff00", "#66ccff", "#000066"))(8)),
                 z = as.matrix(log10(barcode_count_plot + 1e-04)), type = "heatmap")
     })
-    
+
 
     output$cell_type_similarity_plot <- renderPlotly({
         cell_type_similarity_plot_obj <- as.matrix(cell_type_fate_similartiy2(cell_fate()))
         plot_ly(x = rownames(cell_type_similarity_plot_obj),y = colnames(cell_type_similarity_plot_obj),z = as.matrix(cell_type_similarity_plot_obj),type = "heatmap")
 
     })
-    
+
     output$look_fate_bias = renderDT(
         fate_bias(),
         extensions = c('Select', 'SearchPanes',"Buttons"),
         selection = 'none',
         server = FALSE,
         options = list(
-            dom = 'Bftip', 
+            dom = 'Bftip',
             columnDefs = list(
                 list(searchPanes = list(show = FALSE), targets = c(1,3:6)),
                 list(targets = c(1:6), className = 'dt-center')
@@ -418,7 +423,7 @@ server <- function(input, output,session = session) {
             searchHighlight = TRUE,
             lengthChange = FALSE)
     )
-    
+
 ###online tools
     tools1_data <- reactive({
         req(input$upload_1)
@@ -428,8 +433,8 @@ server <- function(input, output,session = session) {
                validate("Invalid file; Please upload a .csv file")
         )
     })
-    
-    
+
+
     # output$download_umap_plot <- downloadHandler(
     #     filename = function(){paste0(input$upload_1$name,'_UMAP.tiff')},
     #     content = function(file) {
@@ -437,12 +442,12 @@ server <- function(input, output,session = session) {
     #         plot(show_umapplot(dataset()))
     #         dev.off()
     #     })
-    # 
+    #
     # output$heatmap <- renderPlot({
     #     show_dimplot(dataset(), feature = gene_set)
     # })
-    # 
-    # 
+    #
+    #
     # output$download_heatmap_plot <- downloadHandler(
     #     filename = function() {
     #         paste0(input$upload_1$name, '_heatmap.tiff')
@@ -460,7 +465,7 @@ server <- function(input, output,session = session) {
     #         dev.off()
     #     }
     # )
- 
+
     ##Home part-----
     output$Tutorials_text1 <- renderText({
         'Tutorials_text1'
@@ -483,11 +488,11 @@ server <- function(input, output,session = session) {
             a("IReNA: integrated regulatory network analysis of single-cell transcriptomes", href="https://www.sciencedirect.com/science/article/pii/S2589004222016315",target='_blank',style = "display: inline;"),
         )
     })
-    
+
     ##
     output$user <- renderUser({
         dashboardUser(
-            name = "Yunhui Kong", 
+            name = "Yunhui Kong",
             image = "github.png",
             fluidRow(
                 dashboardUserItem(

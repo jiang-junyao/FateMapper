@@ -233,8 +233,8 @@ fate_bias_summary <- function(fate_bias){
                                      'significant clone',
                                     'insignificant clone')
   ### show top clone
-  if (nrow(fate_bias[fate_bias$clone_bias_type=='significant clone',])>10) {
-    top_clone = fate_bias$clone_name[1:10]
+  if (nrow(fate_bias[fate_bias$clone_bias_type=='significant clone',])>5) {
+    top_clone = fate_bias$clone_name[1:5]
   }else{
     top_clone = fate_bias$clone_name[fate_bias$clone_bias_type =='significant clone']
   }
