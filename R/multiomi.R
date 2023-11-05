@@ -39,12 +39,11 @@ plot_clone_embedding <- function(barcode_use,pbmc,reduction = 'umap',
     idx <- which(pbmc$barcodes %in% barcode_use)
     barcode_anno[idx] <- paste0("select_barcode:",pbmc$cell_fate[idx])
     coor = as.data.frame(pbmc[,1:2])
-    colnames(coor) = c('X','Y')
     coor$barcode_type = barcode_anno
     coor1 = coor[coor$barcode_type %in% c('other barcode','no barcode'),]
     coor2 = coor[!coor$barcode_type %in% c('other barcode','no barcode'),]
-    ggplot(coor1,aes(x=X,y=Y,color=barcode_type))+geom_point(data=coor1,size=1)+
-      geom_point(data=coor2,aes(x=X,y=Y),size=2)+theme_void()+
+    ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point(data=coor1,size=1)+
+      geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_void()+
       scale_color_manual(values = colors)
   }else{
     stop('Error,please check input data class, only accept seurat and dataframe object')
