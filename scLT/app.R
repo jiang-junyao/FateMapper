@@ -209,17 +209,9 @@ body <- dashboardBody(
                 title =  h2('Select dataset'),
                 status = "warning",
                 solidHeader = FALSE,
-                width = 6,
+                width = 12,
                 height = '250px',
                 selectInput('Select_dataset',label =NULL,choices = unique(coretable$Dataset))
-              ),
-              box(
-                title =  h2('Please input barcode'),
-                status = "warning",
-                solidHeader = FALSE,
-                width = 6,
-                height = '250px',
-                textInput('input_barcode',NULL,value = '394')
               )
             ),
             fluidRow(
@@ -228,11 +220,17 @@ body <- dashboardBody(
                 id = "umap", height = "600px",
                 #static umap
                 tabPanel("raw_uamp",
-                         div(imageOutput("show_umap1"),style = "margin-left: auto; margin-right: auto;middle;background:#FFFFFF;")
+                         div(imageOutput("show_umap1"),style = "margin-left: auto; margin-right: auto;background:#FFFFFF;")
                 ),
                 #dynamic umap
                 tabPanel("barcode_uamp",
-                         div(plotOutput("show_umap2"),style = "margin-left: auto; margin-right: auto;middle;background:#FFFFFF;")
+                         fluidRow(
+                           
+                           column(4,h4('Please input barcode...')),
+                           column(2,textInput('input_barcode',NULL,value = '394'))
+                           
+                         ),
+                         div(plotOutput("show_umap2"),style = "margin-left: auto; margin-right: auto;background:#FFFFFF;")
                 )
               ),
               tabBox(
