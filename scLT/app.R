@@ -93,8 +93,8 @@ sidebar <- dashboardSidebar(
     menuItem("Home", tabName = "home"),
     menuItem("Search", tabName = "look_data"),
     menuItem("Results", tabName = "show_plot"),
-    
-    
+
+
     menuItem("Online tools", tabName = "tools",
              menuSubItem("tools1", tabName = "tools1", icon = icon("angle-right")),
              menuSubItem("tools2", tabName = "tools2", icon = icon("angle-right"))
@@ -108,12 +108,12 @@ sidebar <- dashboardSidebar(
 
 
 body <- dashboardBody(
-  
+
   shinyDashboardThemes(theme = 'grey_light'),
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
   ),
-  
+
   tabItems(
     # home part------
     tabItem(tabName = "home",
@@ -138,7 +138,7 @@ body <- dashboardBody(
                   class = "box-content",style = 'background:#FFFFFF;',
                   img(src = "pie_species.png",style = "max-width: 70%; max-height: 70%;")
                 )
-                
+
               ),
               box(
                 title = 'Tissue',
@@ -160,7 +160,7 @@ body <- dashboardBody(
                 img(src = "pie_tech.png",style = "max-width: 70%; max-height: 70%;")
               ),
               box(div(
-                img(src = "intro_img.png",style = "max-width: 100%; max-height: 100%;")
+                img(src = "intro_img.png",style = "max-width: 80%; max-height: 80%;")
               ),
               status = "warning",
               width = 12,
@@ -168,13 +168,13 @@ body <- dashboardBody(
               align = "middle",
               style = 'background:#FFFFFF'
               )
-              
+
             )
     ),
-    
-    
+
+
     # search part------
-    
+
     tabItem(tabName = "look_data",
             fluidPage(
               # box(
@@ -194,7 +194,7 @@ body <- dashboardBody(
                 width = 12,
                 align = "middle",
                 div(dataTableOutput('core_table',width = "100%"),style = "font-size:150%")
-                
+
               )
             ),
             tags$style(type="text/css",
@@ -225,10 +225,10 @@ body <- dashboardBody(
                 #dynamic umap
                 tabPanel("barcode_uamp",
                          fluidRow(
-                           
+
                            column(4,h4('Please input barcode...')),
                            column(2,textInput('input_barcode',NULL,value = '394'))
-                           
+
                          ),
                          div(plotOutput("show_umap2"),style = "margin-left: auto; margin-right: auto;background:#FFFFFF;")
                 )
@@ -247,15 +247,15 @@ body <- dashboardBody(
                              dataTableOutput('look_fate_bias',width = "100%",)
                              )
                 )
-                
+
               ),
             )
-            
+
     ),
     ##
-    
-    
-    
+
+
+
     ##Online tools---------
     tabItem(tabName = "tools1",
             fluidPage(
@@ -268,7 +268,7 @@ body <- dashboardBody(
                 style = "font-size: 20px;display: flex;align-items: center;"
                 ,
                 fileInput("upload_1", NULL, buttonLabel = "Upload CSV metadata...", multiple = FALSE,accept = c(".xls", ".xlsx"))
-                
+
               )
             )
     ),
@@ -320,12 +320,12 @@ body <- dashboardBody(
                 ,
                 br(),
                 uiOutput("contact_text1")
-                
+
               )
             )
     )
-    
-    
+
+
   )
 )
 ui <-  dashboardPage(skin = "green",
@@ -335,7 +335,7 @@ ui <-  dashboardPage(skin = "green",
 )
 
 server <- function(input, output,session = session) {
-  
+
   ##Home part----
   output$HOME_output_text <- renderUI({
     div(p("scLtDB is a database of single-cell multiomics lineage tracing.It encompasses a comprehensive collection of 30 manually curated datasets, each comprising well-annotated cell identities and barcodes.These datasets span across three distinct species, encompassing seven diverse tissues, and feature the utilization of 16 different lineage tracing technologies.scLTdb provides:"),
@@ -366,7 +366,7 @@ server <- function(input, output,session = session) {
   )
   ##results-----
   #unique(coretable$Dataset)
-  
+
   Select_dataseted <- reactive({
     req(input$Select_dataset)
     obj_metadata_list[[input$Select_dataset]]
@@ -400,7 +400,7 @@ server <- function(input, output,session = session) {
     height = 700,
     width = 800
   )
-  
+
   ##plotly for interactive
   # output$barcode_count_plot <- renderPlotly({
   #   barcode_count_plot <- fate_mapping2(cell_fate())
@@ -415,7 +415,7 @@ server <- function(input, output,session = session) {
       width = 800
     )
   }, deleteFile = FALSE)
-  
+
   output$cell_type_similarity_plot <- renderImage({
     req(input$Select_dataset)
     list(
@@ -424,7 +424,7 @@ server <- function(input, output,session = session) {
       width = 800
     )
   }, deleteFile = FALSE)
-  
+
   output$look_fate_bias = renderDT(
     fate_bias()[,-5],
     extensions = c('Select', 'SearchPanes',"Buttons"),
@@ -445,7 +445,7 @@ server <- function(input, output,session = session) {
       searchHighlight = TRUE,
       lengthChange = FALSE)
   )
-  
+
   ###online tools
   tools1_data <- reactive({
     req(input$upload_1)
@@ -455,8 +455,8 @@ server <- function(input, output,session = session) {
            validate("Invalid file; Please upload a .csv file")
     )
   })
-  
-  
+
+
   # output$download_umap_plot <- downloadHandler(
   #     filename = function(){paste0(input$upload_1$name,'_UMAP.tiff')},
   #     content = function(file) {
@@ -487,7 +487,7 @@ server <- function(input, output,session = session) {
   #         dev.off()
   #     }
   # )
-  
+
   ##Home part-----
   output$Tutorials_text1 <- renderText({
     'Tutorials_text1'
@@ -511,7 +511,7 @@ server <- function(input, output,session = session) {
         style = "display: inline;"
     )
   })
-  
+
   ##
   output$user <- renderUser({
     dashboardUser(
