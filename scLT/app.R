@@ -9,7 +9,7 @@ library(shinyjqui)
 library(FateMapper)
 library(heatmaply)
 options(shiny.maxRequestSize=1024*1024^2)
-
+shinyWidgets::setBackgroundColor("#FFFFFF",shinydashboard = T)
 load('coretable.Rdata')
 obj_metadata_list <- readRDS('obj_metadata_list.rds')
 
@@ -193,9 +193,12 @@ body <- dashboardBody(
                 solidHeader = FALSE,
                 width = 12,
                 align = "middle",
-                div(dataTableOutput('core_table',width = "100%"),style = "font-size:150%")
-                
-              )
+                div(DT::dataTableOutput('coretable',width = "100%"),style = "font-size:150%")
+              ),
+              box(title =  h2('Dataset Selected'),
+                  verbatimTextOutput('seleted_row')
+                  )
+              
             ),
             tags$style(type="text/css",
                        ".shiny-output-error { visibility: hidden; }",
@@ -205,19 +208,9 @@ body <- dashboardBody(
     ##Results umap------
     tabItem(tabName = "show_plot",
             fluidRow(
-              box(
-                title =  h2('Select dataset'),
-                status = "warning",
-                solidHeader = FALSE,
-                width = 12,
-                height = '250px',
-                selectInput('Select_dataset',label =NULL,choices = unique(coretable$Dataset))
-              )
-            ),
-            fluidRow(
               tabBox(
                 title =  h3('UMAP of xxx'),
-                id = "umap", height = "600px",
+                id = "umap", height = "800px",
                 #static umap
                 tabPanel("raw_uamp",
                          div(imageOutput("show_umap1"),style = "margin-left: auto; margin-right: auto;background:#FFFFFF;")
@@ -230,12 +223,12 @@ body <- dashboardBody(
                            column(2,textInput('input_barcode',NULL,value = '394'))
                            
                          ),
-                         div(plotOutput("show_umap2"),style = "margin-left: auto; margin-right: auto;background:#FFFFFF;")
+                         div(plotOutput("show_umap2"),style = "margin-left: auto; margin-right: auto;")
                 )
               ),
               tabBox(
                 title = "1231231",
-                id = "tabset1", height = "600px",
+                id = "tabset1", height = "800px",
                 tabPanel("Barcode_count",
                          div(imageOutput("barcode_count_plot"),style = "margin-left: auto; margin-right: auto;")
                 ),
@@ -248,7 +241,7 @@ body <- dashboardBody(
                              )
                 )
                 
-              ),
+              )
             )
             
     ),
@@ -356,9 +349,11 @@ server <- function(input, output,session = session) {
     "HOME_stat1"
   })
   ##search-----
-  output$core_table = renderDT(
+  output$coretable = renderDataTable(
     coretable,
-    rownames= FALSE,
+    selection = 'single',
+    rownames =FALSE,
+    server = TRUE,
     options = list(
       pageLength = 13,
       searchHighlight = TRUE,
@@ -366,11 +361,28 @@ server <- function(input, output,session = session) {
   )
   ##results-----
   #unique(coretable$Dataset)
-  
-  Select_dataseted <- reactive({
-    req(input$Select_dataset)
-    obj_metadata_list[[input$Select_dataset]]
+  #core_table_rows_selected
+  output$seleted_row = renderPrint({
+      s = input$coretable_rows_selected
+      if (length(s)) {
+          cat('These rows were selected:\n\n')
+          cat(coretable[s,]$Dataset, sep = ', ')
+      }
   })
+  
+ 
+  Select_dataseted <- reactive({
+      s = input$coretable_rows_selected
+      if (length(s)) {
+          Select_dataset =  coretable[s,]$Dataset
+      }else{
+          Select_dataset = 'Biddy_2018_Nature'
+      }
+     obj_metadata_list[[input$Select_dataset]]
+  })
+  
+  
+  
   cell_fate <- reactive({
     req(input$Select_dataset)
     cell_fate <-  Select_dataseted()[,c('barcodes','celltype')]
@@ -378,8 +390,13 @@ server <- function(input, output,session = session) {
     return(cell_fate)
   })
   fate_bias <- reactive({
-    req(input$Select_dataset)
-    fate_bias <-  readRDS(paste0('clone_fate_bias/',unique(input$Select_dataset),'.rds'))
+    s = input$coretable_rows_selected
+    if (length(s)) {
+      Select_dataset =  coretable[s,]$Dataset
+    }else{
+      Select_dataset = 'Biddy_2018_Nature'
+    }
+    fate_bias <-  readRDS(paste0('clone_fate_bias/',unique(Select_dataset),'.rds'))
     fate_bias <- as_tibble(purrr::reduce(fate_bias,bind_rows))
     fate_bias$fate_ratio <- round(as.numeric(fate_bias$fate_ratio),4)
     fate_bias$pvalue <- round(as.numeric(fate_bias$pvalue),4)
@@ -387,9 +404,15 @@ server <- function(input, output,session = session) {
     return(fate_bias)
   })
   output$show_umap1 <- renderImage({
-    req(input$Select_dataset)
-    list(
-      src = file.path("dataset_umap/", paste0(input$Select_dataset, ".png")),
+      s = input$coretable_rows_selected
+      if (length(s)) {
+          Select_dataset =  coretable[s,]$Dataset
+      }else{
+          Select_dataset = 'Biddy_2018_Nature'
+      }
+      
+      list(
+      src = file.path("dataset_umap/", paste0(Select_dataset, ".png")),
       contentType = "image/png",
       width = 800
     )
@@ -408,18 +431,28 @@ server <- function(input, output,session = session) {
   #           z = as.matrix(log10(barcode_count_plot + 1e-04)), type = "heatmap")
   # })
   output$barcode_count_plot <- renderImage({
-    req(input$Select_dataset)
-    list(
-      src = file.path("clone_expression_fig/", paste0(input$Select_dataset, ".png")),
+      s = input$coretable_rows_selected
+      if (length(s)) {
+          Select_dataset =  coretable[s,]$Dataset
+      }else{
+          Select_dataset = 'Biddy_2018_Nature'
+      }
+     list(
+      src = file.path("clone_expression_fig/", paste0(Select_dataset, ".png")),
       contentType = "image/png",
       width = 800
     )
   }, deleteFile = FALSE)
   
   output$cell_type_similarity_plot <- renderImage({
-    req(input$Select_dataset)
+      s = input$coretable_rows_selected
+      if (length(s)) {
+          Select_dataset =  coretable[s,]$Dataset
+      }else{
+          Select_dataset = 'Biddy_2018_Nature'
+      }
     list(
-      src = file.path("cell_type_similarity/", paste0(input$Select_dataset, ".png")),
+      src = file.path("cell_type_similarity/", paste0(Select_dataset, ".png")),
       contentType = "image/png",
       width = 800
     )
