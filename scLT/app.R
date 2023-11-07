@@ -378,7 +378,7 @@ server <- function(input, output,session = session) {
       }else{
           Select_dataset = 'Biddy_2018_Nature'
       }
-     obj_metadata_list[[input$Select_dataset]]
+     obj_metadata_list[[Select_dataset]]
   })
   
   
