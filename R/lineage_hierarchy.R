@@ -269,8 +269,9 @@ fate_bias_summary <- function(fate_bias){
 #'
 #' @examples
 lineage_tree <- function(data,idx='celltype',method='spearman',...){
-  ct_similarity = cell_type_fate_similartiy(data,out_similar_mt = T,plot = F)
+  ct_similarity = cell_type_fate_similartiy(data,out_similar_mt = T,plot = F,
+                                            method = method)
   dist_mt = as.dist(ct_similarity)
   nj.tree <- ape::nj(dist_mt)
-  plot(nj.tree, ...)
+  plot(nj.tree,...)
 }
