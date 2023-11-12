@@ -87,10 +87,10 @@ server <- function(input, output,session = session) {
             p("5.Download well processed seurat object"),style ='display: inline;'
         )
     })
-    
-    
-    
-    
+
+
+
+
     #search-----
     output$coretable = renderDataTable(
         coretable,
@@ -111,9 +111,9 @@ server <- function(input, output,session = session) {
             cat(coretable[s,]$Dataset, sep = ', ')
         }
     })
-    
-    
-    ##Results
+
+
+    #Results-----------
     Select_dataseted <- reactive({
         s = input$coretable_rows_selected
         if (length(s)) {
@@ -123,7 +123,7 @@ server <- function(input, output,session = session) {
         }
         obj_metadata_list[[Select_dataset]]
     })
-    
+
     output$show_umap1 <- renderImage({
         s = input$coretable_rows_selected
         if (length(s)) {
@@ -131,7 +131,7 @@ server <- function(input, output,session = session) {
         }else{
             Select_dataset = 'Biddy_2018_Nature'
         }
-        
+
         list(
             src = file.path("dataset_umap/", paste0(Select_dataset, ".png")),
             contentType = "image/png",
@@ -144,7 +144,7 @@ server <- function(input, output,session = session) {
     height = 700,
     width = 800
     )
-    
+
     output$show_umap <- renderUI({
         if (input$input_barcode == 'Please input barcode...') {
             imageOutput("show_umap1")
@@ -152,10 +152,10 @@ server <- function(input, output,session = session) {
             plotOutput("show_umap2")
         }
     })
-    
-    
-    
-    
+
+
+
+
     cell_fate <- reactive({
         req(input$Select_dataset)
         cell_fate <-  Select_dataseted()[,c('barcodes','celltype')]
@@ -196,7 +196,7 @@ server <- function(input, output,session = session) {
             width = 800
         )
     }, deleteFile = FALSE)
-    
+
     output$cell_type_similarity_plot <- renderImage({
         s = input$coretable_rows_selected
         if (length(s)) {
@@ -210,7 +210,7 @@ server <- function(input, output,session = session) {
             width = 800
         )
     }, deleteFile = FALSE)
-    
+
     output$lineage_tree_plot <- renderImage({
         s = input$coretable_rows_selected
         if (length(s)) {
@@ -224,7 +224,7 @@ server <- function(input, output,session = session) {
             width = 800
         )
     }, deleteFile = FALSE)
-    
+
     output$look_fate_bias = renderDT(
         fate_bias()[,-5],
         extensions = c('Select', 'SearchPanes',"Buttons"),
@@ -245,6 +245,15 @@ server <- function(input, output,session = session) {
             searchHighlight = TRUE,
             lengthChange = FALSE)
     )
-    
-    
+
+    #Online tools-----
+    upload_metadata <- reactive({
+      req(input$upload_metadata)
+      ext <- tools::file_ext(input$upload_metadata$name)
+      switch(ext,
+             xls = read.csv(input$upload_metadata$datapath),
+             validate("Invalid file; Please upload a .csv file")
+      )
+    })
+
 }
