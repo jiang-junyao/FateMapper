@@ -1,0 +1,26 @@
+.navbar-brand {
+    padding-left:0px;
+}
+.navbar-nav > li > a{
+                   padding-top:8px !important; 
+                   height: 60px;
+                   padding-bottom: 20px;
+                   font-size: 32px;
+                 }
+.navbar { 
+    color:black;
+    font-size: 32px;
+    text-align: center !important;
+}
+.nav-link {
+    margin-left: 20px;
+}
+.Introduction {
+    background-color: #5F9BD5;
+}
+.species {
+    border-color: #5F9BD5;
+}
+.tissue {
+    border-color: #ffffff;
+}
