@@ -194,11 +194,6 @@ ui <- page_navbar(
               )
 
               ),
-
-
-
-
-    nav_panel(title = "Tutorials", p("Second tab content.")),
     nav_panel(title = "Download", p("Third tab content")),
     nav_panel(title = "Contact", p("Third tab content")),
     nav_spacer(),
