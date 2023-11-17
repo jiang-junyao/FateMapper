@@ -4,7 +4,9 @@
 #' @param data data.frame, indicating lineage tracing data, first column should
 #' be lineage tracing barcodes, second column should be related cell type
 #' @param idx column name of cell type
+#' @param input_type 'table' or 'matrix'
 #' @param order_use order cell type
+#' @param normalize_method 'ratio' or 'log'
 #' @param show_rownames vector,indicating the order of cell types in the heatmap.
 #' @param col heatmap colors
 #' @param cluster_row boolean values determining if rows should be clustered
@@ -16,39 +18,54 @@
 #' @export
 #'
 #' @examples fate_mapping(fate_test)
-fate_mapping <- function(data,idx='celltype',order_use=NULL,show_row=T,
+fate_mapping <- function(data,idx='celltype',input_type = 'table',normalize_method='ratio',
+                         order_use=NULL,show_row=T,
                          cluster_rows=F,cluster_cols=T,...){
-  data = data[!is.na(data[,1]),]
-  lineage_use = unique(data[,idx])
-  freq_list <- purrr::map(unique(data$barcodes),function(i){
-    data_use = data[data$barcodes==i,]
-    freq = as.data.frame(table(data_use$celltype))
-    freq$Var1 = as.character(freq$Var1)
-    freq = freq[freq$Freq!=0,]
-    lineage_absent = lineage_use[!lineage_use %in% as.character(freq$Var1)]
-    lineage_absent_df =data.frame(lineage_absent,rep(0,length(lineage_absent)))
-    colnames(lineage_absent_df) = colnames(freq)
-    freq = rbind(freq,lineage_absent_df)
-    rownames(freq) = freq$Var1
-    freq = freq[lineage_use,]
-    return(as.data.frame(t(data.frame(freq$Freq))))
-  })
+  if (input_type == 'table') {
+      data = data[!is.na(data[,1]),]
+      lineage_use = unique(data[,idx])
+      freq_list <- purrr::map(unique(data$barcodes),function(i){
+        data_use = data[data$barcodes==i,]
+        freq = as.data.frame(table(data_use$celltype))
+        freq$Var1 = as.character(freq$Var1)
+        freq = freq[freq$Freq!=0,]
+        lineage_absent = lineage_use[!lineage_use %in% as.character(freq$Var1)]
+        lineage_absent_df =data.frame(lineage_absent,rep(0,length(lineage_absent)))
+        colnames(lineage_absent_df) = colnames(freq)
+        freq = rbind(freq,lineage_absent_df)
+        rownames(freq) = freq$Var1
+        freq = freq[lineage_use,]
+        return(as.data.frame(t(data.frame(freq$Freq))))
+      })
 
-  freq_df = do.call(dplyr::bind_rows,freq_list)
-  rownames(freq_df) = unique(data$barcodes)
-  colnames(freq_df) = lineage_use
+      freq_df = do.call(dplyr::bind_rows,freq_list)
+      rownames(freq_df) = unique(data$barcodes)
+      colnames(freq_df) = lineage_use
+  }else if(input_type == 'matrix'){
+    freq_df = data
+  }
+
 
   col<- rev(colorRampPalette(c("#cc0000", "#FFff00",'#66ccff','#000066'))(50))
   if (!is.null(order_use)) {
     freq_df = freq_df[,order_use]
   }
-  freq_df_ratio = apply(freq_df, 1, function(x){
-    row_sum = sum(x)
-    return(x/row_sum)
-  })
-  pheatmap::pheatmap(t(freq_df_ratio),show_rownames =show_row,color = col
-                     ,cluster_rows = cluster_rows,cluster_cols = cluster_cols,
-                     border_color = NA,...)
+  if (normalize_method=='ratio') {
+    freq_df_ratio = apply(freq_df, 1, function(x){
+      row_sum = sum(x)
+      return(x/row_sum)
+    })
+    pheatmap::pheatmap(t(freq_df_ratio),show_rownames =show_row,color = col
+                       ,cluster_rows = cluster_rows,cluster_cols = cluster_cols,
+                       border_color = NA,...)
+  }else if(normalize_method=='log'){
+    freq_df_ratio = log10(freq_df)
+    freq_df_ratio[freq_df_ratio == -Inf] = 0
+    pheatmap::pheatmap(freq_df_ratio,show_rownames =show_row,color = col
+                       ,cluster_rows = cluster_rows,cluster_cols = cluster_cols,
+                       border_color = NA,...)
+  }
+
 
   return(freq_df)
 }
@@ -120,7 +137,8 @@ fate_ct_col <- function(data,idx='cell_type',
 #' @export
 #'
 #' @examples cell_type_fate_similartiy(fate_test)
-cell_type_fate_similartiy <- function(data,idx='celltype',method='spearman',
+cell_type_fate_similartiy <- function(data,idx='celltype',input_type = 'table'
+                                      ,method='spearman',
                                    plot = TRUE,out_similar_mt = FALSE,...){
   col<- rev(colorRampPalette(c("#cc0000", "#FFff00",'#66ccff','#000066'))(50))
   lineage_use = unique(data[,idx])
@@ -175,41 +193,75 @@ cell_type_fate_similartiy <- function(data,idx='celltype',method='spearman',
 #' @export
 #'
 #' @examples clone_fate_bias(fate_test)
-clone_fate_bias <- function(data,fate_use = ''){
-  data = data[!is.na(data[,1]),]
-  all_clone_size = nrow(data)
+clone_fate_bias <- function(data,fate_use = '',data_type = 'table'){
   list_result = list()
+  if (data_type == 'table') {
+    data = data[!is.na(data[,1]),]
+    all_clone_size = nrow(data)
+    for (i in unique(data[,1])) {
 
-  for (i in unique(data[,1])) {
-
-    ### select dominant fate
-    if (fate_use == '') {
-      freq = as.data.frame(table(data[data[,1]==i,]))
-      freq = freq[order(freq[,2],decreasing = T),]
-      fate_use = as.character(freq[1,2])
-      print(fate_use)
+      ### select dominant fate
+      if (fate_use == '') {
+        freq = as.data.frame(table(data[data[,1]==i,]))
+        freq = freq[order(freq[,2],decreasing = T),]
+        fate_use = as.character(freq[1,2])
+        print(fate_use)
+      }
+      ct_all_clone_size = nrow(data[data[,2]==fate_use,])
+      data_clone = data[data[,1]==i,]
+      clone_size = nrow(data_clone)
+      clone_ct_size = nrow(data_clone[data_clone[,2]==fate_use,])
+      fate_ratio = clone_ct_size/clone_size
+      if (length(clone_ct_size)>0) {
+        p_val = fisher.test(data.frame(c(clone_ct_size,
+                                         clone_size-clone_ct_size),
+                                       c(ct_all_clone_size-clone_ct_size,
+                                         all_clone_size-(ct_all_clone_size-clone_ct_size))
+        )
+        )$p.value
+        FDR = p.adjust(p_val, method = "fdr")
+        list_result[[as.character(i)]] = c(i,fate_use,clone_size,
+                                           fate_ratio,p_val,FDR)
+      }
     }
-    ct_all_clone_size = nrow(data[data[,2]==fate_use,])
-    data_clone = data[data[,1]==i,]
-    clone_size = nrow(data_clone)
-    clone_ct_size = nrow(data_clone[data_clone[,2]==fate_use,])
-    fate_ratio = clone_ct_size/clone_size
-    if (length(clone_ct_size)>0) {
-      p_val = fisher.test(data.frame(c(clone_ct_size,
-                                       clone_size-clone_ct_size),
-                             c(ct_all_clone_size-clone_ct_size,
-                               all_clone_size-(ct_all_clone_size-clone_ct_size))
-                             )
-                            )$p.value
-      FDR = p.adjust(p_val, method = "fdr")
-      list_result[[as.character(i)]] = c(i,fate_use,clone_size,
-                                         fate_ratio,p_val,FDR)
+  }else if(data_type == 'matrix'){
+    clone_ct_freq = reshape2::melt(as.matrix(data))
+    clone_ct_freq = clone_ct_freq[clone_ct_freq[,3]!=0,]
+    all_clone_size = sum(clone_ct_freq[,3])
+    for (i in unique(clone_ct_freq[,1])) {
+
+      ### select dominant fate
+      if (fate_use == '') {
+        freq = as.data.frame(table(clone_ct_freq[clone_ct_freq[,1]==i,]))
+        freq = freq[order(freq[,2],decreasing = T),]
+        fate_use = as.character(freq[1,2])
+      }
+      ct_all_clone_size = sum(clone_ct_freq[clone_ct_freq[,2]==fate_use,3])
+      clone_ct_freq_clone = clone_ct_freq[clone_ct_freq[,1]==i,]
+      clone_size = sum(clone_ct_freq_clone[,3])
+      clone_ct_size = sum(clone_ct_freq_clone[clone_ct_freq_clone[,2]==fate_use,3])
+      fate_ratio = clone_ct_size/clone_size
+      if (length(clone_ct_size)>0) {
+        p_val = fisher.test(data.frame(c(clone_ct_size,
+                                         clone_size-clone_ct_size),
+                                       c(ct_all_clone_size-clone_ct_size,
+                                         all_clone_size-(ct_all_clone_size-clone_ct_size))
+        )
+        )$p.value
+        FDR = p.adjust(p_val, method = "fdr")
+        list_result[[as.character(i)]] = c(i,fate_use,clone_size,
+                                           fate_ratio,p_val,FDR)
+      }
     }
   }
+
 
   result_df = as.data.frame(t(as.data.frame(list_result)))
   colnames(result_df) = c('clone_name','fate_use','clone_size','fate_ratio',
                           'pvalue','fdr')
+  result_df$clone_size = as.numeric(result_df$clone_size)
+  result_df = result_df[order(result_df[,3],decreasing = T),]
+  result_df$clone_size_rank = 1:nrow(result_df)
   result_df = result_df[order(result_df[,5]),]
   result_df = result_df[result_df[,4]>0,]
   return(result_df)

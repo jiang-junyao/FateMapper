@@ -63,3 +63,27 @@ sample_repeats <- function(df_sample){
   }
   p1
 }
+
+#' Title
+#'
+#' @param mt clone matrix
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sort_clone_mt <- function(mt){
+  mt = as.matrix(mt)
+  final_idx = c()
+  left_idx = 1:nrow(mt)
+  for (i in 1:ncol(mt)) {
+    col_use = mt[as.numeric(left_idx),i]
+    names(col_use) = left_idx
+    sort_idx = sort(col_use,decreasing = T)
+    final_idx = c(final_idx,names(sort_idx)[sort_idx!=0])
+    left_idx = names(sort_idx)[sort_idx==0]
+  }
+  final_idx = c(final_idx,left_idx)
+  return(as.numeric(final_idx))
+}
+
