@@ -1,8 +1,11 @@
 library(FateMapper)
 library(ggplot2)
-metdata_list = readRDS('F:\\scLT-seq db\\metadata_rds\\obj_metadata_list.rds') ### modify this dir
+metdata_list = readRDS('obj_metadata_list.rds') ### modify this dir
 dataset1_name = "Pei_2020_CSC_TPE13"
 dataset2_name = "Pei_2020_CSC_TPE9"
+
+
+
 dataset_cell_number_compare <- function(dataset1_name,dataset2_name,metdata_list){
 
   dataset1 = metdata_list[[dataset1_name]]
@@ -54,3 +57,4 @@ dataset_fate_bias_number_compare <- function(dataset1_name,dataset2_name,metdata
     scale_fill_manual(values = c("#5E4FA2","#F88D51"))
 }
 
+dataset_fate_bias_number_compare(dataset1_name,dataset2_name,metdata_list)

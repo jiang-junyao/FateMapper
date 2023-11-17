@@ -2,6 +2,6 @@
 - [x] Move the location of input barcode
 - [x] change the background color of the plot UMAP 
 - [x] Click datatable to select dataset
-- [ ] UMAP default show cell type and interactive with selected barcode
+- [x] UMAP default show cell type and interactive with selected barcode
 - [ ] Build online tool
 - [ ] Build download page

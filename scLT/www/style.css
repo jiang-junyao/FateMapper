@@ -1,0 +1,37 @@
+.navbar-brand {
+    padding-left:0px;
+}
+.navbar-nav > li > a{
+                   padding-top:8px !important;
+                   height: 60px;
+                   padding-bottom: 20px;
+                   font-size: 32px;
+                 }
+.navbar {
+    color:black;
+    font-size: 32px;
+    text-align: center !important;
+}
+.nav-link {
+    margin-left: 20px;
+}
+.Introduction {
+    background-color: #5F9BD5;
+}
+.species {
+    border-color: #5F9BD5;
+}
+.tissue {
+    border-color: #ffffff;
+}
+
+.vertical-center-row > .col-xs-5, .vertical-center-row > .col-sm-5 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* 右对齐标签 */
+}
+
+.vertical-center-row > .col-xs-7, .vertical-center-row > .col-sm-7 {
+  display: flex;
+  align-items: center;
+}
