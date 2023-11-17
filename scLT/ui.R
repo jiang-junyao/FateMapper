@@ -27,7 +27,7 @@ ui <- page_navbar(
     #nav_item(shiny::icon("circle-info")),
     ###Home-----
     nav_panel(title = "Home",
-              icon = shiny::icon("circle-info"),
+              icon = icon('home',lib="glyphicon"),
               div(class = 'home',
               fluidPage(
                   card(
@@ -77,13 +77,14 @@ ui <- page_navbar(
                   card(
                       card_image(file = "www/intro_img.png" ),
                       style = 'background:#FFFFFF'
-                  )
-
+                  ),
+                  style = "font-size:150%;width:80%;"
               )
               )
         ),
      ###Search-----
      nav_panel(title = "Search",
+               icon = icon('search',lib = 'glyphicon'),
                fluidPage(
                    div(
                    card(
@@ -101,6 +102,7 @@ ui <- page_navbar(
 
     ###Results-----
     nav_panel(title = "Results",
+              icon = icon('chart-line',lib="font-awesome"),
               fluidPage(
                   layout_column_wrap(
                       width = 1/2,
@@ -136,13 +138,15 @@ ui <- page_navbar(
                           )
 
                       )
-                  )
+                  ),
+                  style = "font-size:150%;width:80%;"
               )
 
               ),
 
     ###Online tools-----
     nav_panel(title = "Online tools",
+              icon = icon('cloud'),
               layout_column_wrap(
                 width = 1/2,
                 height = NULL,
@@ -194,8 +198,19 @@ ui <- page_navbar(
               )
 
               ),
-    nav_panel(title = "Download", p("Third tab content")),
-    nav_panel(title = "Contact", p("Third tab content")),
+
+
+
+
+    nav_panel(title = "Tutorials", 
+              icon = icon('bookmark',lib = 'glyphicon'),
+              p("Second tab content.")),
+    nav_panel(title = "Download", 
+              icon = icon('download',lib = 'glyphicon'),
+              p("Third tab content")),
+    nav_panel(title = "Contact",
+              icon =  icon('envelope',lib = 'glyphicon'),
+              p("Third tab content")),
     nav_spacer(),
     nav_item(link_github)
 
