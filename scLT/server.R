@@ -273,10 +273,16 @@ server <- function(input, output,session = session) {
       req(input$upload_metadata)
       ext <- tools::file_ext(input$upload_metadata$name)
       switch(ext,
-             xls = read.csv(input$upload_metadata$datapath),
+             csv = read.csv(input$upload_metadata$datapath),
              validate("Invalid file; Please upload a .csv file")
       )
     })
+    output$test_table <- renderTable({
+        head(upload_metadata())
+        
+    })
+    
+    
     selected_value <- reactive({
         input$Compare_dataset
     })

@@ -181,11 +181,12 @@ ui <- navbarPage(
                                     ),style = 'margin-top:25px;'),
                   id = "tools2", height = "800px",
                   full_screen = TRUE,
-                  
-                  
-                  
-                  
+                  nav_panel("show data",
+                          tableOutput('test_table')  
+                            
+                  ),
                   nav_panel("clone profile"
+                            
 
                   ),
                   nav_panel("cell type similarity"
@@ -201,9 +202,6 @@ ui <- navbarPage(
               )
 
               ),
-
-
-
 
     tabPanel(title = "Tutorials", 
               icon = icon('bookmark',lib = 'glyphicon'),
