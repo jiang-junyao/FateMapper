@@ -14,19 +14,16 @@ load('coretable.Rdata')
 
 
 
-link_github <- tags$a(shiny::icon("github"), "FateMapper", href = "https://github.com/jiang-junyao/FateMapper", target = "_blank")
 
 
-ui <- page_navbar(
-    tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
-    ),
-    title = '',
-    window_title = 'scLTDB',
+ui <- navbarPage(
+
+    includeCSS("www/style.css"),
+    title = 'scLTDB',
     bg = "#0062cc",
-    #nav_item(shiny::icon("circle-info")),
+    id = "inTabset",
     ###Home-----
-    nav_panel(title = "Home",
+    tabPanel(title = "Home",
               icon = icon('home',lib="glyphicon"),
               div(class = 'home',
               fluidPage(
@@ -83,7 +80,7 @@ ui <- page_navbar(
               )
         ),
      ###Search-----
-     nav_panel(title = "Search",
+    tabPanel(title = "Search",
                icon = icon('search',lib = 'glyphicon'),
                fluidPage(
                    div(
@@ -92,8 +89,7 @@ ui <- page_navbar(
                        div(DT::dataTableOutput('coretable',width = "100%"))
                    ),
                    card(
-                       card_header("Dataset Selected"),
-                       verbatimTextOutput('seleted_row')
+                       actionButton("go_to_panel", "Expore dataset....",class = 'jump')
                    )
 
                     ),style = "font-size:150%;width:80%;")
@@ -101,7 +97,8 @@ ui <- page_navbar(
 
 
     ###Results-----
-    nav_panel(title = "Results",
+    tabPanel(title = "Results",
+             value =  "Results",
               icon = icon('chart-line',lib="font-awesome"),
               fluidPage(
                   layout_column_wrap(
@@ -145,7 +142,7 @@ ui <- page_navbar(
               ),
 
     ###Online tools-----
-    nav_panel(title = "Online tools",
+    tabPanel(title = "Online tools",
               icon = icon('cloud'),
               layout_column_wrap(
                 width = 1/2,
@@ -202,16 +199,16 @@ ui <- page_navbar(
 
 
 
-    nav_panel(title = "Tutorials", 
+    tabPanel(title = "Tutorials", 
               icon = icon('bookmark',lib = 'glyphicon'),
               p("Second tab content.")),
-    nav_panel(title = "Download", 
+    tabPanel(title = "Download", 
               icon = icon('download',lib = 'glyphicon'),
               p("Third tab content")),
-    nav_panel(title = "Contact",
+    tabPanel(title = "Contact",
               icon =  icon('envelope',lib = 'glyphicon'),
               p("Third tab content")),
-    nav_spacer(),
-    nav_item(link_github)
+    tabPanel(title = 'FateMapper',
+             icon = shiny::icon("github"))
 
 )

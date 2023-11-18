@@ -255,5 +255,10 @@ server <- function(input, output,session = session) {
              validate("Invalid file; Please upload a .csv file")
       )
     })
+    observeEvent(input$go_to_panel, {
+        
+        updateTabsetPanel(session,"inTabset", selected =  "Results")
+    })
+    
 
 }
