@@ -10,7 +10,7 @@ library(shinyWidgets)
 options(shiny.maxRequestSize=1024*1024^2)
 
 
-load('coretable.Rdata')
+coretable <- readxl::read_xlsx('scLTdb summary.xlsx')
 
 
 
@@ -155,17 +155,21 @@ ui <- navbarPage(
                              "Please choose 2 datasets:",
                              style = 'margin-left: 20px;margin-top: 2px;font-size: 22px;'
                            )
+                           
                     ),
                     column(6,
                            selectizeInput(
                              "Compare_dataset",
                              label = NULL,
+                             selected = c('Biddy_2018_Nature','Hurley_2020_CSC'),
                              choices = coretable$Dataset,
                              multiple = TRUE,
                              width = 600,
                              options = list(maxItems = 2)
                            )
-                    )
+                    ),
+                    
+                    plotOutput("selected_option")
                   )
 
                 ),
@@ -177,6 +181,10 @@ ui <- navbarPage(
                                     ),style = 'margin-top:25px;'),
                   id = "tools2", height = "800px",
                   full_screen = TRUE,
+                  
+                  
+                  
+                  
                   nav_panel("clone profile"
 
                   ),
@@ -186,9 +194,7 @@ ui <- navbarPage(
                   nav_panel("Clone fate bias"
 
                   ),
-                  nav_panel("Clone embedding"
-
-                  ),
+                  nav_panel("Clone embedding")
                 )
 
 

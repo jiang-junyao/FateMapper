@@ -1,5 +1,5 @@
 obj_metadata_list <- readRDS('obj_metadata_list.rds')
-load('coretable.Rdata')
+coretable <- readxl::read_xlsx('scLTdb summary.xlsx')
 
 fate_mapping2 <- function (data, idx = "celltype", order_use = NULL, show_row = T,
                            cluster_rows = F, cluster_cols = T)
@@ -74,6 +74,25 @@ plot_clone_embedding2 <- function(barcode,metadata){
 }
 
 
+dataset_cell_number_compare <- function(dataset1_name,dataset2_name,metdata_list){
+    
+    dataset1 = metdata_list[[dataset1_name]]
+    dataset2 = metdata_list[[dataset2_name]]
+    dataset1_ct_freq = as.data.frame(table(dataset1$celltype))
+    dataset1_ct_freq$dataset = dataset1_name
+    dataset2_ct_freq = as.data.frame(table(dataset2$celltype))
+    dataset2_ct_freq$dataset = dataset2_name
+    df_final = rbind(dataset1_ct_freq,dataset2_ct_freq)
+    
+    p1 <- ggplot(df_final,aes(x=Var1,y=Freq,fill=dataset))+
+        geom_col(stat='identity', position='dodge',width = 0.8)+theme_classic()+
+        xlab('cell state')+ylab('cell number') +scale_y_continuous(expand = c(0,0))+
+        scale_fill_manual(values = c("#5E4FA2","#F88D51"))
+    
+    return(p1)
+}
+
+
 
 
 server <- function(input, output,session = session) {
@@ -111,7 +130,10 @@ server <- function(input, output,session = session) {
             cat(coretable[s,]$Dataset, sep = ', ')
         }
     })
-
+    observeEvent(input$go_to_panel, {
+        
+        updateTabsetPanel(session,"inTabset", selected =  "Results")
+    })
 
     #Results-----------
     Select_dataseted <- reactive({
@@ -255,9 +277,16 @@ server <- function(input, output,session = session) {
              validate("Invalid file; Please upload a .csv file")
       )
     })
-    observeEvent(input$go_to_panel, {
-        
-        updateTabsetPanel(session,"inTabset", selected =  "Results")
+    selected_value <- reactive({
+        input$Compare_dataset
+    })
+    
+    
+    output$selected_option <- renderPlot({
+        dataset_cell_number_compare(dataset1_name = selected_value()[1],
+                                    dataset2_name = selected_value()[2],
+                                    metdata_list = obj_metadata_list)
+      
     })
     
 
