@@ -7,6 +7,7 @@ library(DT)
 library(shinyjqui)
 library(FateMapper)
 library(shinyWidgets)
+library(plotly)
 options(shiny.maxRequestSize=1024*1024^2)
 
 
@@ -134,7 +135,7 @@ ui <-
 
                       )
                   ),
-                  style = "font-size:150%;width:80%;"
+                  style = "font-size:100%;width:80%;"
               )
 
               ),
@@ -183,11 +184,15 @@ ui <-
                                     )),
                   id = "tools2", height = "800px",
                   full_screen = TRUE,
-                  nav_panel("clone profile"
-                            
-
+                  nav_panel("clone profile",
+                            div(
+                                plotlyOutput('cloneprofile_tools')
+                            )
                   ),
-                  nav_panel("cell type similarity"
+                  nav_panel("cell type similarity",
+                            div(
+                                plotlyOutput('cell_type_fate_similartiy_tools')
+                            )
 
                   ),
                   nav_panel("Clone fate bias"
