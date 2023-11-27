@@ -52,6 +52,8 @@ sample_repeats <- function(df_sample){
 
         cor1=cor(df_plot[,2],df_plot[,3],method='spearman')
         cor1 = round(cor1,3)
+        df_plot = df_plot[,2:3]
+        df_plot = log10(df_plot+1)
         p2=ggplot(df_plot,aes(x=sample1,y=sample2))+geom_point()+theme_classic()+
           geom_smooth(method = "lm", se = FALSE)+xlab('sample count') +
           ylab('')+ggtitle(paste0(i,' ',j,' correlation:',cor1))+
