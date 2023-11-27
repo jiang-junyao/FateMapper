@@ -176,8 +176,6 @@ server <- function(input, output,session = session) {
     })
 
 
-
-
     cell_fate <- reactive({
         req(input$Select_dataset)
         cell_fate <-  Select_dataseted()[,c('barcodes','celltype')]
@@ -277,10 +275,32 @@ server <- function(input, output,session = session) {
              validate("Invalid file; Please upload a .csv file")
       )
     })
-    output$test_table <- renderTable({
-        head(upload_metadata())
-        
+
+    output$cloneprofile_tools <- renderPlotly({
+      cloneprofile <- fate_mapping2(upload_metadata())
+        plot_ly(
+          x = colnames(log10(cloneprofile + 1e-04)),
+          color =  rev(colorRampPalette(
+            c("#cc0000", "#FFff00", "#66ccff", "#000066")
+          )(8)),
+          z = as.matrix(log10(cloneprofile + 1e-04)),
+          type = "heatmap"
+        )
+      })
+    output$cell_type_fate_similartiy_tools <- renderPlotly({
+      ctf <- cell_type_fate_similartiy(upload_metadata(),out_similar_mt = T,plot = FALSE)
+      plot_ly(
+        x = colnames(ctf),
+        y = rownames(ctf),
+        color =  rev(colorRampPalette(
+          c("#cc0000", "#FFff00", "#66ccff", "#000066")
+        )(8)),
+        z = as.matrix(ctf),
+        type = "heatmap"
+      )
     })
+
+    
     
     
     selected_value <- reactive({
@@ -294,6 +314,4 @@ server <- function(input, output,session = session) {
                                     metdata_list = obj_metadata_list)
       
     })
-    
-
 }

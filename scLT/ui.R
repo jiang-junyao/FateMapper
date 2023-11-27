@@ -7,21 +7,20 @@ library(DT)
 library(shinyjqui)
 library(FateMapper)
 library(shinyWidgets)
+library(plotly)
 options(shiny.maxRequestSize=1024*1024^2)
 
 
 coretable <- readxl::read_xlsx('scLTdb summary.xlsx')
 
 
-
-
-
-ui <- navbarPage(
-
-    includeCSS("www/style.css"),
-    title = 'scLTDB',
-    bg = "#0062cc",
+ui <- 
+    navbarPage(
+    includeCSS("www/style.css"), 
+    title = NULL,
+    bg = "#325880",
     id = "inTabset",
+    theme = bslib::bs_theme(),
     ###Home-----
     tabPanel(title = "Home",
               icon = icon('home',lib="glyphicon"),
@@ -136,7 +135,7 @@ ui <- navbarPage(
 
                       )
                   ),
-                  style = "font-size:150%;width:80%;"
+                  style = "font-size:100%;width:80%;"
               )
 
               ),
@@ -150,46 +149,50 @@ ui <- navbarPage(
                 navset_card_tab(
                   title =   fluidRow(
                     class = "vertical-center-row",  # 添加自定义的类名
-                    column(6,
+                    column(5,
                            tags$label(
                              "Please choose 2 datasets:",
                              style = 'margin-left: 20px;margin-top: 2px;font-size: 22px;'
                            )
                            
                     ),
-                    column(6,
-                           selectizeInput(
-                             "Compare_dataset",
-                             label = NULL,
-                             selected = c('Biddy_2018_Nature','Hurley_2020_CSC'),
-                             choices = coretable$Dataset,
-                             multiple = TRUE,
-                             width = 600,
-                             options = list(maxItems = 2)
+                    column(7,
+                           div(class = "double_choose",
+                               selectizeInput(
+                                   "Compare_dataset",
+                                   label = NULL,
+                                   selected = c('Biddy_2018_Nature','Hurley_2020_CSC'),
+                                   choices = coretable$Dataset,
+                                   multiple = TRUE,
+                                   width = 500,
+                                   options = list(maxItems = 2)
+                               )
                            )
+
                     ),
-                    
-                    plotOutput("selected_option")
+                    card(
+                        plotOutput("selected_option")
+                    ),
+                    full_screen = TRUE
                   )
 
                 ),
 
                 navset_card_tab(
-                  title = div(fileInput("upload_metadata", NULL,
-                                    buttonLabel = "Upload...",
-                                    width = 250,multiple = FALSE,accept = c(".csv"),
-                                    ),style = 'margin-top:25px;'),
+                  title = div(class = 'upload_meta',
+                      fileInput("upload_metadata", NULL,buttonLabel = "Upload...", width = 250,multiple = FALSE,accept = c(".csv"),
+                                    )),
                   id = "tools2", height = "800px",
                   full_screen = TRUE,
-                  nav_panel("show data",
-                          tableOutput('test_table')  
-                            
+                  nav_panel("clone profile",
+                            div(
+                                plotlyOutput('cloneprofile_tools')
+                            )
                   ),
-                  nav_panel("clone profile"
-                            
-
-                  ),
-                  nav_panel("cell type similarity"
+                  nav_panel("cell type similarity",
+                            div(
+                                plotlyOutput('cell_type_fate_similartiy_tools')
+                            )
 
                   ),
                   nav_panel("Clone fate bias"
@@ -212,7 +215,6 @@ ui <- navbarPage(
     tabPanel(title = "Contact",
               icon =  icon('envelope',lib = 'glyphicon'),
               p("Third tab content")),
-    tabPanel(title = 'FateMapper',
-             icon = shiny::icon("github"))
-
+    nav_spacer(),
+    nav_item(tags$a(shiny::icon("github"), "FateMapper", href = "https://jiang-junyao.github.io/FateMapper/", target = "_blank"))
 )
