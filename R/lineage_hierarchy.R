@@ -148,13 +148,13 @@ cell_type_fate_similartiy <- function(data,idx='celltype',input_type = 'table'
       sample1 = data[data[,idx]==i,]
       sample2 = data[data[,idx]==j,]
 
-      fre_all = as.data.frame(table(sample1[,1]))
+      fre_all = as.data.frame(table(sample1[,3]))
       fre_all_all = as.data.frame(table(fre_all[,2]))
-      fre_all1 = as.data.frame(table(sample2[,1]))
+      fre_all1 = as.data.frame(table(sample2[,3]))
       fre_all_all1 = as.data.frame(table(fre_all1[,2]))
 
-      overlapped_idx = intersect(sample1[,1],sample2[,1])
-      all_idx = union(sample1[,1],sample2[,1])
+      overlapped_idx = intersect(sample1[,3],sample2[,3])
+      all_idx = union(sample1[,3],sample2[,3])
       df_plot = data.frame(all_idx,rep(0,length(all_idx)),rep(0,
                                                               length(all_idx)))
       df_plot[,2] = fre_all[match(df_plot$all_idx,fre_all[,1]),2]
