@@ -23,6 +23,7 @@ fate_mapping <- function(data,idx='celltype',input_type = 'table',normalize_meth
                          cluster_rows=F,cluster_cols=T,...){
   if (input_type == 'table') {
       data = data[!is.na(data[,1]),]
+      data[,idx] = as.character(data[,idx])
       lineage_use = unique(data[,idx])
       freq_list <- purrr::map(unique(data$barcodes),function(i){
         data_use = data[data$barcodes==i,]
