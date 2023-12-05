@@ -22,8 +22,11 @@ fate_mapping <- function(data,idx='celltype',input_type = 'table',normalize_meth
                          order_use=NULL,show_row=T,
                          cluster_rows=F,cluster_cols=T,...){
   if (input_type == 'table') {
+      if (class(data[,idx])== 'factor') {
+      data_levels<-levels(data[,idx])   
+      }     
+      data[,idx]=as.character(data[,idx])
       data = data[!is.na(data[,1]),]
-      data[,idx] = as.character(data[,idx])
       lineage_use = unique(data[,idx])
       freq_list <- purrr::map(unique(data$barcodes),function(i){
         data_use = data[data$barcodes==i,]
@@ -48,8 +51,14 @@ fate_mapping <- function(data,idx='celltype',input_type = 'table',normalize_meth
 
 
   col<- rev(colorRampPalette(c("#cc0000", "#FFff00",'#66ccff','#000066'))(50))
-  if (!is.null(order_use)) {
-    freq_df = freq_df[,order_use]
+  column_order <- if (!is.null(order_use)) order_use else if (!is.null(data_levels)) data_levels else NULL
+  if (!is.null(column_order)) {
+    for (column in column_order) {
+        if (!(column %in% names(freq_df))) {
+          freq_df[[column]] <- 0
+        }
+    }
+    freq_df = freq_df[, column_order]
   }
   if (normalize_method=='ratio') {
     freq_df_ratio = apply(freq_df, 1, function(x){
@@ -60,8 +69,7 @@ fate_mapping <- function(data,idx='celltype',input_type = 'table',normalize_meth
                        ,cluster_rows = cluster_rows,cluster_cols = cluster_cols,
                        border_color = NA,...)
   }else if(normalize_method=='log'){
-    freq_df_ratio = log10(freq_df)
-    freq_df_ratio[freq_df_ratio == -Inf] = 0
+    freq_df_ratio <- log10(freq_df + 1)
     pheatmap::pheatmap(freq_df_ratio,show_rownames =show_row,color = col
                        ,cluster_rows = cluster_rows,cluster_cols = cluster_cols,
                        border_color = NA,...)
@@ -70,6 +78,7 @@ fate_mapping <- function(data,idx='celltype',input_type = 'table',normalize_meth
 
   return(freq_df)
 }
+
 
 #' Column plot for Composition of cell types of each barcode
 #' @description make column plot to show Composition of cell types of each barcode
