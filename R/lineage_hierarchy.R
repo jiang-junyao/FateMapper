@@ -173,6 +173,9 @@ cell_type_fate_similartiy <- function(data,idx='celltype',input_type = 'table'
       df_plot[is.na(df_plot)] = 0
 
       sample_similarity = cor(df_plot[,2],df_plot[,3],method = method)
+      if (i==j && is.na(sample_similarity)) {
+         sample_similarity=1 
+      }
       sample_similarity_list[[paste0(i,'-',j)]] = data.frame(i
                                                              ,j,sample_similarity)
     }
