@@ -21,6 +21,7 @@
 fate_mapping <- function(data,idx='celltype',input_type = 'table',normalize_method='ratio',
                          order_use=NULL,show_row=T,
                          cluster_rows=F,cluster_cols=T,...){
+  data_levels=NULL
   if (input_type == 'table') {
       if (class(data[,idx])== 'factor') {
       data_levels<-levels(data[,idx])   
