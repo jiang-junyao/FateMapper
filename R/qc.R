@@ -90,3 +90,24 @@ sort_clone_mt <- function(mt){
   return(as.numeric(final_idx))
 }
 
+#' Calculate the spearman correlation of select feature between each sample to
+#' estimate consistency of technical replicates
+#'
+#' @param df_sample data.frame, indicating lineage tracing data, first column should
+#' be sample, second column should be interested feature
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sample_venn <- function(df_sample){
+  library(ggplot2)
+  library(patchwork)
+  list_venn = list()
+  for (i in unique(df_sample[,1])) {
+    df_use = df_sample[df_sample[,1]==i,]
+    list_venn[[i]] = unique(df_use[,2])
+  }
+  ggvenn::ggvenn(list_venn,names(list_venn),set_name_size = 4)+
+    ggtitle('')+theme(text = element_text(size=12))
+}
