@@ -24,8 +24,8 @@ fate_mapping <- function(data,idx='celltype',input_type = 'table',normalize_meth
   data_levels=NULL
   if (input_type == 'table') {
       if (class(data[,idx])== 'factor') {
-      data_levels<-levels(data[,idx])   
-      }     
+      data_levels<-levels(data[,idx])
+      }
       data[,idx]=as.character(data[,idx])
       data = data[!is.na(data[,3]),]
       lineage_use = unique(data[,idx])
@@ -175,7 +175,7 @@ cell_type_fate_similartiy <- function(data,idx='celltype',input_type = 'table'
 
       sample_similarity = cor(df_plot[,2],df_plot[,3],method = method)
       if (i==j && is.na(sample_similarity)) {
-         sample_similarity=1 
+         sample_similarity=1
       }
       sample_similarity_list[[paste0(i,'-',j)]] = data.frame(i
                                                              ,j,sample_similarity)
@@ -207,7 +207,8 @@ cell_type_fate_similartiy <- function(data,idx='celltype',input_type = 'table'
 #' @export
 #'
 #' @examples clone_fate_bias(fate_test)
-clone_fate_bias <- function(data,fate_use = '',data_type = 'table'){
+clone_fate_bias <- function(data,fate_use = '',data_type = 'table',
+                            alternative = 'greater'){
   list_result = list()
   if (data_type == 'table') {
     data = data[!is.na(data[,1]),]
@@ -231,7 +232,7 @@ clone_fate_bias <- function(data,fate_use = '',data_type = 'table'){
                                          clone_size-clone_ct_size),
                                        c(ct_all_clone_size-clone_ct_size,
                                          all_clone_size-(ct_all_clone_size-clone_ct_size))
-        )
+        ),alternative = alternative
         )$p.value
         FDR = p.adjust(p_val, method = "fdr")
         list_result[[as.character(i)]] = c(i,fate_use,clone_size,
