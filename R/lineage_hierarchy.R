@@ -234,9 +234,8 @@ clone_fate_bias <- function(data,fate_use = '',data_type = 'table',
                                          all_clone_size-(ct_all_clone_size-clone_ct_size))
         ),alternative = alternative
         )$p.value
-        FDR = p.adjust(p_val, method = "fdr")
         list_result[[as.character(i)]] = c(i,fate_use,clone_size,
-                                           fate_ratio,p_val,FDR)
+                                           fate_ratio,p_val)
       }
     }
   }else if(data_type == 'matrix'){
@@ -261,11 +260,10 @@ clone_fate_bias <- function(data,fate_use = '',data_type = 'table',
                                          clone_size-clone_ct_size),
                                        c(ct_all_clone_size-clone_ct_size,
                                          all_clone_size-(ct_all_clone_size-clone_ct_size))
-        )
+        ),alternative = alternative
         )$p.value
-        FDR = p.adjust(p_val, method = "fdr")
         list_result[[as.character(i)]] = c(i,fate_use,clone_size,
-                                           fate_ratio,p_val,FDR)
+                                           fate_ratio,p_val)
       }
     }
   }
@@ -273,12 +271,13 @@ clone_fate_bias <- function(data,fate_use = '',data_type = 'table',
 
   result_df = as.data.frame(t(as.data.frame(list_result)))
   colnames(result_df) = c('clone_name','fate_use','clone_size','fate_ratio',
-                          'pvalue','fdr')
+                          'pvalue')
   result_df$clone_size = as.numeric(result_df$clone_size)
-  result_df = result_df[order(result_df[,3],decreasing = T),]
-  result_df$clone_size_rank = 1:nrow(result_df)
-  result_df = result_df[order(result_df[,5]),]
+  FDR = p.adjust(result_df$pvalue, method = "fdr")
+  result_df$fdr = FDR  
+  result_df = result_df[order(result_df[,6]),]
   result_df = result_df[result_df[,4]>0,]
+  result_df$clone_size_rank = 1:nrow(result_df)  
   return(result_df)
 }
 
