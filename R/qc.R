@@ -53,9 +53,10 @@ sample_repeats <- function(df_sample){
         cor1=cor(df_plot[,2],df_plot[,3],method='spearman')
         cor1 = round(cor1,3)
         df_plot = df_plot[,2:3]
-        df_plot = log10(df_plot+1)
+        df_plot[,1] = df_plot[,1]/sum(df_plot[,1])
+        df_plot[,2] = df_plot[,2]/sum(df_plot[,2])
         p2=ggplot(df_plot,aes(x=sample1,y=sample2))+geom_point()+theme_classic()+
-          geom_smooth(method = "lm", se = FALSE)+xlab('sample count') +
+          geom_smooth(method = "lm", se = FALSE)+xlab('barcode ratio') +
           ylab('')+ggtitle(paste0(i,' ',j,' correlation:',cor1))+
           theme(plot.title = element_text(size = 8))
         p1=p1+p2
@@ -89,3 +90,24 @@ sort_clone_mt <- function(mt){
   return(as.numeric(final_idx))
 }
 
+#' Calculate the spearman correlation of select feature between each sample to
+#' estimate consistency of technical replicates
+#'
+#' @param df_sample data.frame, indicating lineage tracing data, first column should
+#' be sample, second column should be interested feature
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sample_venn <- function(df_sample){
+  library(ggplot2)
+  library(patchwork)
+  list_venn = list()
+  for (i in unique(df_sample[,1])) {
+    df_use = df_sample[df_sample[,1]==i,]
+    list_venn[[i]] = unique(df_use[,2])
+  }
+  ggvenn::ggvenn(list_venn,names(list_venn),set_name_size = 4)+
+    ggtitle('')+theme(text = element_text(size=12))
+}
