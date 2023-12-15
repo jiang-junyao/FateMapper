@@ -17,8 +17,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 4.0),
-    ggplot2,
-    Seurat
+    ggplot2
 Suggests: 
     knitr,
     rmarkdown,
