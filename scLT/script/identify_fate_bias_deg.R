@@ -7,7 +7,7 @@ all_data = dir(dir1)
 all_fate_bias_marker = list()
 for (i in all_data) {
   obj = readRDS(paste0(dir1,i))
-  metadata = data@meta.data
+  metadata = obj@meta.data
   fate_bias = readRDS(paste0(fate_bias_dir,i))
   sig_fate = c()
   all_ct = unique(metadata$celltype)
