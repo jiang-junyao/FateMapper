@@ -14,10 +14,9 @@ for (i in all_data) {
   ### retina sig
   for (j in 1:length(fate_bias)) {
     fate = fate_bias[[j]]
-    fate$fdr = p.adjust(fate$pvalue,method = 'fdr')
     fate = fate[fate$fdr<0.05,]
     fate = fate[fate$fate_ratio>0.1,]
-
+    print(paste0(names(fate_bias)[j],' num:',nrow(fate)))
     if (nrow(fate)>0) {
       fate_bias[[names(fate_bias)[j]]] = fate
       sig_fate = c(sig_fate,names(fate_bias)[j])
@@ -26,6 +25,7 @@ for (i in all_data) {
   ### all cell fate combinations
   marker_list = list()
   combinations <- combn(sig_fate, 2)
+    
   for (j in 1:ncol(combinations)) {
     fate1 = fate_bias[[combinations[1,j]]]$clone_name
     fate2 = fate_bias[[combinations[2,j]]]$clone_name
@@ -41,16 +41,22 @@ for (i in all_data) {
         data$lineage = ifelse(colnames(data) %in% fate1_cell,combinations[1,j],
                            combinations[2,j])
         data@active.ident = as.factor(data$lineage)
-        marker = FindAllMarkers(data,only.pos = T)
-        marker = marker[order(marker$p_val_adj),]
-        marker$cluster = paste(marker$cluster,'bias')
-        index = paste(combinations[1,j],'bias','VS',combinations[2,j],
-                      'bias','-',k)
-        marker$index = index
-        marker_list[[index]] = marker
+        marker = FindAllMarkers(data,only.pos = T,test.use = 'negbinom')
+        if (nrow(marker)>0){
+            marker = marker[order(marker$p_val_adj),]
+            #marker$cluster = paste(marker$cluster,'bias')
+            index = paste(combinations[1,j],'bias','VS',combinations[2,j],
+                          'bias','-',k)
+            marker$index = index
+            marker_list[[index]] = marker
+        }else{
+            marker_list[[index]] = NA
+        }
+
       }
     }
   }
+  marker_list = marker_list[!is.na(marker_list)]
   marker_df = do.call(bind_rows,marker_list)
   all_fate_bias_marker[[i]] = marker_df
 }
