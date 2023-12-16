@@ -70,9 +70,15 @@ ui <-
                   )
                   ,
                   tags$br(),
-                  card(
-                      card_image(file = "www/intro_img.png" ),
-                      style = 'background:#FFFFFF'
+                  div(style = 'display: flex; justify-content: space-around;',
+                      card(
+                        card_image(file = "www/intro_img.png"),
+                        style = 'background:#FFFFFF; flex: 2; margin: 10px;'
+                      ),
+                      card(
+                        card_image(file = "www/basic_statistic.png"),
+                        style = 'background:#FFFFFF; flex: 1; margin: 10px;'
+                      )
                   ),
                   style = "font-size:150%;width:80%;"
               )
