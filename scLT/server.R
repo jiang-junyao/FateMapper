@@ -1,5 +1,8 @@
 obj_metadata_list <- readRDS('obj_metadata_list.rds')
-coretable <- readxl::read_xlsx('scLTdb summary.xlsx')
+coretable <- readxl::read_xlsx('scLTdb summary.xlsx')[1:9]
+coretable$species <- as.factor(coretable$species)
+coretable$Technology <- as.factor(coretable$Technology)
+coretable$`barcode type` <- as.factor(coretable$`barcode type`)
 
 fate_mapping2 <- function(data,idx='celltype',input_type = 'table',normalize_method='ratio',
                          order_use=NULL,show_row=T,
@@ -110,7 +113,7 @@ cell_type_fate_similartiy2 <- function(data,idx='celltype',input_type = 'table'
 
 
 dataset_cell_number_compare <- function(dataset1_name,dataset2_name,metdata_list){
-    
+
     dataset1 = metdata_list[[dataset1_name]]
     dataset2 = metdata_list[[dataset2_name]]
     dataset1_ct_freq = as.data.frame(table(dataset1$celltype))
@@ -118,12 +121,12 @@ dataset_cell_number_compare <- function(dataset1_name,dataset2_name,metdata_list
     dataset2_ct_freq = as.data.frame(table(dataset2$celltype))
     dataset2_ct_freq$dataset = dataset2_name
     df_final = rbind(dataset1_ct_freq,dataset2_ct_freq)
-    
+
     p1 <- ggplot(df_final,aes(x=Var1,y=Freq,fill=dataset))+
         geom_col(stat='identity', position='dodge',width = 0.8)+theme_classic()+
         xlab('cell state')+ylab('cell number') +scale_y_continuous(expand = c(0,0))+
         scale_fill_manual(values = c("#5E4FA2","#F88D51"))
-    
+
     return(p1)
 }
 
@@ -146,9 +149,12 @@ server <- function(input, output,session = session) {
 
 
     #search-----
-    output$coretable = renderDataTable(
+    output$coretable = DT::renderDT(
         coretable,
         selection = 'single',
+        filter = list(
+          position = 'top', clear = FALSE
+        ),
         rownames =FALSE,
         server = TRUE,
         options = list(
@@ -166,7 +172,7 @@ server <- function(input, output,session = session) {
         }
     })
     observeEvent(input$go_to_panel, {
-        
+
         updateTabsetPanel(session,"inTabset", selected =  "Results")
     })
 
@@ -335,18 +341,18 @@ server <- function(input, output,session = session) {
       )
     })
 
-    
-    
-    
+
+
+
     selected_value <- reactive({
         input$Compare_dataset
     })
-    
-    
+
+
     output$selected_option <- renderPlot({
         dataset_cell_number_compare(dataset1_name = selected_value()[1],
                                     dataset2_name = selected_value()[2],
                                     metdata_list = obj_metadata_list)
-      
+
     })
 }

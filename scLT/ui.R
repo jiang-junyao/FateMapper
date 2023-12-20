@@ -14,9 +14,9 @@ options(shiny.maxRequestSize=1024*1024^2)
 coretable <- readxl::read_xlsx('scLTdb summary.xlsx')
 
 
-ui <- 
+ui <-
     navbarPage(
-    includeCSS("www/style.css"), 
+    includeCSS("www/style.css"),
     title = NULL,
     bg = "#325880",
     id = "inTabset",
@@ -97,7 +97,7 @@ ui <-
                        actionButton("go_to_panel", "Expore dataset....",class = 'jump')
                    )
 
-                    ),style = "font-size:150%;width:80%;")
+                    ),style = "font-size:120%;width:90%;")
                ),
 
 
@@ -160,7 +160,7 @@ ui <-
                              "Please choose 2 datasets:",
                              style = 'margin-left: 20px;margin-top: 2px;font-size: 22px;'
                            )
-                           
+
                     ),
                     column(7,
                            div(class = "double_choose",
@@ -212,10 +212,10 @@ ui <-
 
               ),
 
-    tabPanel(title = "Tutorials", 
+    tabPanel(title = "Tutorials",
               icon = icon('bookmark',lib = 'glyphicon'),
               p("Second tab content.")),
-    tabPanel(title = "Download", 
+    tabPanel(title = "Download",
               icon = icon('download',lib = 'glyphicon'),
               p("Third tab content")),
     tabPanel(title = "Contact",
