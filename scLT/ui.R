@@ -214,13 +214,29 @@ ui <-
 
     tabPanel(title = "Tutorials",
               icon = icon('bookmark',lib = 'glyphicon'),
-              p("Second tab content.")),
+              p("Second tab content.")
+
+
+
+
+             ),
     tabPanel(title = "Download",
               icon = icon('download',lib = 'glyphicon'),
               p("Third tab content")),
     tabPanel(title = "Contact",
               icon =  icon('envelope',lib = 'glyphicon'),
-              p("Third tab content")),
+             fluidPage(
+               card(
+                 card_header("Contact us",class = "Introduction"),
+                 status = "primary",
+                 width = 12,
+                 height = NULL,
+                 card_body(
+                   uiOutput("Contact_text")
+                 )
+
+               ))
+             ),
     nav_spacer(),
     nav_item(tags$a(shiny::icon("github"), "FateMapper", href = "https://jiang-junyao.github.io/FateMapper/", target = "_blank"))
 )

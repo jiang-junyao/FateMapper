@@ -146,6 +146,24 @@ server <- function(input, output,session = session) {
     })
 
 
+    output$Contact_text <- renderUI({
+      div(
+        h3('About'),
+        p('We hope you find this data resource useful. Please contact us with your experiences and suggestions'),
+        br(),
+
+        h3('Contact'),
+        p("If your have any question, please don't hesitate to contact us."),
+        p("Junyao:jyjiang@link.cuhk.edu.hk"),
+        p("Yunhui: kongyunhui1@gmail.com"),
+        br(),
+        h3('Citation'),
+        p("xxx"),
+        style ='display: inline;'
+      )
+    })
+
+
 
 
     #search-----

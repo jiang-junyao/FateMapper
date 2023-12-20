@@ -5,6 +5,7 @@
 - [x] UMAP default show cell type and interactive with selected barcode
 - [x] Build online tool
 - [ ] Build download page like DRCTdb
+- [x] Build Contact page
 - [x] add three buttons in search page (species,barcode type,Techonology) to search dataset
 - [x] Build online tool (fate_mapping,cell_type_fate_similartiy, and clone_fate_bias functions in FateMapper package)
 - [ ] replace the lineage tree in the result page with fate bias DEGs/DRBs
