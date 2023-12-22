@@ -147,79 +147,91 @@ ui <-
               ),
 
     ###Online tools-----
-    tabPanel(title = "Online tools",
+    navbarMenu(title = "Online tools",
               icon = icon('cloud'),
-              layout_column_wrap(
-                width = 1/2,
-                height = NULL,
-                navset_card_tab(
-                  title =   fluidRow(
-                    class = "vertical-center-row",  # 添加自定义的类名
-                    column(5,
-                           tags$label(
-                             "Please choose 2 datasets:",
-                             style = 'margin-left: 20px;margin-top: 2px;font-size: 22px;'
-                           )
+              tabPanel("Tools 1",
 
+
+                    layout_column_wrap(
+                       width = 1/2,
+                       card(
+                            card_header("header"),
+                            "This is it."
+                            ),
+                       navset_card_tab(
+                         title =   fluidRow(
+                           class = "vertical-center-row",  # 添加自定义的类名
+                           column(5,
+                                  tags$label(
+                                    "Please choose 2 datasets:",
+                                    style = 'margin-left: 20px;margin-top: 2px;font-size: 22px;'
+                                  )
+
+                           ),
+                           column(7,
+                                  div(class = "double_choose",
+                                      selectizeInput(
+                                        "Compare_dataset",
+                                        label = NULL,
+                                        selected = c('Biddy_2018_Nature','Hurley_2020_CSC'),
+                                        choices = coretable$Dataset,
+                                        multiple = TRUE,
+                                        width = 500,
+                                        options = list(maxItems = 2)
+                                      )
+                                  )
+
+                           ),
+                           card(
+                             plotOutput("selected_option")
+                           ),
+                           full_screen = TRUE
+                         )
+
+                       )
+                       )
                     ),
-                    column(7,
-                           div(class = "double_choose",
-                               selectizeInput(
-                                   "Compare_dataset",
-                                   label = NULL,
-                                   selected = c('Biddy_2018_Nature','Hurley_2020_CSC'),
-                                   choices = coretable$Dataset,
-                                   multiple = TRUE,
-                                   width = 500,
-                                   options = list(maxItems = 2)
-                               )
-                           )
 
-                    ),
-                    card(
-                        plotOutput("selected_option")
-                    ),
-                    full_screen = TRUE
-                  )
+              tabPanel("Tools 2",
+                       layout_column_wrap(
+                         width = 1/2,
+                         card(
+                           card_header("header"),
+                           "This is it."
+                         ),
+                       navset_card_tab(
+                         title = div(class = 'upload_meta',
+                                     fileInput("upload_metadata", NULL,buttonLabel = "Upload...", width = 250,multiple = FALSE,accept = c(".csv"),
+                                     )),
+                         id = "tools2", height = "800px",
+                         full_screen = TRUE,
+                         nav_panel("clone profile",
+                                   div(
+                                     plotlyOutput('cloneprofile_tools')
+                                   )
+                         ),
+                         nav_panel("cell type similarity",
+                                   div(
+                                     plotlyOutput('cell_type_fate_similartiy_tools')
+                                   )
 
-                ),
+                         ),
+                         nav_panel("Clone fate bias"
 
-                navset_card_tab(
-                  title = div(class = 'upload_meta',
-                      fileInput("upload_metadata", NULL,buttonLabel = "Upload...", width = 250,multiple = FALSE,accept = c(".csv"),
-                                    )),
-                  id = "tools2", height = "800px",
-                  full_screen = TRUE,
-                  nav_panel("clone profile",
-                            div(
-                                plotlyOutput('cloneprofile_tools')
-                            )
-                  ),
-                  nav_panel("cell type similarity",
-                            div(
-                                plotlyOutput('cell_type_fate_similartiy_tools')
-                            )
+                         ),
+                         nav_panel("Clone embedding")
+                       )
 
-                  ),
-                  nav_panel("Clone fate bias"
-
-                  ),
-                  nav_panel("Clone embedding")
-                )
-
-
-              )
-
+                       )
+                    )
               ),
+
 
     tabPanel(title = "Tutorials",
               icon = icon('bookmark',lib = 'glyphicon'),
               p("Second tab content.")
-
-
-
-
              ),
+
     tabPanel(title = "Download",
               icon = icon('download',lib = 'glyphicon'),
               p("Third tab content")),
