@@ -124,7 +124,7 @@ ui <-
                           title = "1231231",
                           id = "tabset1", height = "800px",
                           full_screen = TRUE,
-                          nav_panel("Barcode_count",
+                          nav_panel("ccc",
                                    div(imageOutput("barcode_count_plot"),style = "margin-left: auto; margin-right: auto;")
                           ),
                           nav_panel("cell_type_similarity",
