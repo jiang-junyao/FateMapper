@@ -1,6 +1,7 @@
 obj_metadata_list <- readRDS('obj_metadata_list.rds')
 coretable <- readxl::read_xlsx('scLTdb summary.xlsx')[1:9]
 coretable$species <- as.factor(coretable$species)
+coretable$tissue <- as.factor(coretable$tissue)
 coretable$Technology <- as.factor(coretable$Technology)
 coretable$`barcode type` <- as.factor(coretable$`barcode type`)
 
