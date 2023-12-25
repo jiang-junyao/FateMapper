@@ -18,7 +18,7 @@ ui <-
     navbarPage(
     includeCSS("www/style.css"),
     title = NULL,
-    bg = "#325880",
+    bg = "#F9F7F3",
     id = "inTabset",
     theme = bslib::bs_theme(),
     ###Home-----
@@ -124,7 +124,7 @@ ui <-
                           title = "1231231",
                           id = "tabset1", height = "800px",
                           full_screen = TRUE,
-                          nav_panel("ccc",
+                          nav_panel("Clone heatmap",
                                    div(imageOutput("barcode_count_plot"),style = "margin-left: auto; margin-right: auto;")
                           ),
                           nav_panel("cell_type_similarity",
@@ -135,7 +135,7 @@ ui <-
                                        dataTableOutput('look_fate_bias',width = "100%",)
                                    )
                           ),
-                          nav_panel("lineage tree",
+                          nav_panel("Fate bias DEG/DBR",
                                    div(imageOutput("lineage_tree_plot"),style = "margin-left: auto; margin-right: auto;")
                           )
 
