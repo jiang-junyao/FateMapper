@@ -136,7 +136,16 @@ ui <-
                                    )
                           ),
                           nav_panel("Fate bias DEG/DBR",
-                                   div(imageOutput("lineage_tree_plot"),style = "margin-left: auto; margin-right: auto;")
+                                   div(
+                                       fluidRow(
+                                           column(6,uiOutput("DEGs")),
+                                           column(6,uiOutput("fate"))
+                                       ),
+                                       imageOutput('fate_bias_DEGs_plot')
+                                       
+                                       )
+                                   
+                                   
                           )
 
                       )
@@ -150,8 +159,6 @@ ui <-
     navbarMenu(title = "Online tools",
               icon = icon('cloud'),
               tabPanel("Tools 1",
-
-
                     layout_column_wrap(
                        width = 1/2,
                        card(

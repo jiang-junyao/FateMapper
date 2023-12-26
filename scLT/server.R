@@ -326,6 +326,72 @@ server <- function(input, output,session = session) {
             lengthChange = FALSE)
     )
 
+    
+    
+    
+    
+    
+    output$DEGs <- renderUI({
+        s = input$coretable_rows_selected
+        if (length(s)) {
+            Select_dataset =  coretable[s,]$Dataset
+        }else{
+            Select_dataset = 'Biddy_2018_Nature'
+        }
+        #dir = 'clone_fate_bias_deg/Biddy_2018_Nature_deg/celltype__fate_use.rds'
+        dir = paste0('clone_fate_bias_deg/',Select_dataset,'_deg')
+        fate_rds_file = list.files(dir,pattern = 'fate_use.rds',full.names = T)
+        fate_rds <- readRDS(fate_rds_file)
+        
+       selectInput(inputId = 'ct',
+                   label = 'Choose Cell type',
+                   choices = unique(names(fate_rds)),
+                   selected = unique(names(fate_rds))[1],
+                   width = '200px')
+
+        
+    })
+    
+    output$fate <- renderUI({
+        s = input$coretable_rows_selected
+        if (length(s)) {
+            Select_dataset =  coretable[s,]$Dataset
+        }else{
+            Select_dataset = 'Biddy_2018_Nature'
+        }
+        #dir = 'clone_fate_bias_deg/Biddy_2018_Nature_deg/celltype__fate_use.rds'
+        dir = paste0('clone_fate_bias_deg/',Select_dataset,'_deg')
+        fate_rds_file = list.files(dir,pattern = 'fate_use.rds',full.names = T)
+        fate_rds <- readRDS(fate_rds_file)
+        selectInput(inputId = 'fate_choose',
+                    label = 'Choose fate',
+                    choices = unique(fate_rds[[input$ct]]$fate_use),
+                    selected = unique(fate_rds[[input$ct]]$fate_use)[1],
+                    width = '600px')
+
+    })
+    
+    output$fate_bias_DEGs_plot <- renderImage({
+        s = input$coretable_rows_selected
+        if (length(s)) {
+            Select_dataset =  coretable[s,]$Dataset
+        }else{
+            Select_dataset = 'Biddy_2018_Nature'
+        }
+        dir = paste0('clone_fate_bias_deg/',Select_dataset,'_deg')
+        fate_rds_file = list.files(dir,pattern = 'fate_use.rds',full.names = T)
+        fate_rds <- readRDS(fate_rds_file)
+
+        png_loc <- list.files(dir,pattern = paste0(input$ct,'_',input$fate_choose,'.png'),full.names = T)
+        list(
+            src = png_loc[1],
+            contentType = "image/png",
+            width = 800
+        )
+    }, deleteFile = FALSE)
+
+
+    
     #Online tools-----
     upload_metadata <- reactive({
       req(input$upload_metadata)
