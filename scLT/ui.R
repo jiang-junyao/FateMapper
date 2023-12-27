@@ -14,9 +14,19 @@ options(shiny.maxRequestSize=1024*1024^2)
 coretable <- readxl::read_xlsx('scLTdb summary.xlsx')
 
 
-ui <-
+ui <- function(request) {
+    query <- parseQueryString(request$QUERY_STRING)
+
+    defaultTab <- if (!is.null(query$tab) ) {
+    query$tab
+    } else {
+    "Home"  
+    }
+
     navbarPage(
     includeCSS("www/style.css"),
+
+     
     title = NULL,
     bg = "#F9F7F3",
     id = "inTabset",
@@ -259,3 +269,4 @@ ui <-
     nav_spacer(),
     nav_item(tags$a(shiny::icon("github"), "FateMapper", href = "https://jiang-junyao.github.io/FateMapper/", target = "_blank"))
 )
+}

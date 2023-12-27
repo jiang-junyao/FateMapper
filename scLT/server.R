@@ -112,7 +112,53 @@ cell_type_fate_similartiy2 <- function(data,idx='celltype',input_type = 'table'
   }
 }
 
+#111
+plot_clone_embedding2 <- function(barcode_use,pbmc,reduction = 'umap',
+                                        colors=c(rgb(200/255,200/255,200/255),
+                                                        rgb(230/255,230/255,230/255),
+                                                        rgb(239/255,153/255,81/255),
+                                                        rgb(91/255,166/255,218/255),
+                                                        rgb(217/255,83/255,25/255)
+)){
+  ### pbmc is seurat object need cell_fate in metadata
+  ### barcode_use is vector
+  if ('Seurat' %in% class(pbmc)) {
+      barcode_anno = rep('other barcode',ncol(pbmc))
+      barcode_anno[is.na(pbmc$barcodes)] = 'no barcode'
+      for (i in 1:length(colnames(pbmc))) {
+        if (pbmc@meta.data$barcodes[i] %in% barcode_use) {
+          barcode_anno[i] = paste0('select_barcode:',pbmc@meta.data$barcodes[i])
+        }
+      }
+      pbmc[['Barcode_family']]=barcode_anno
+      coor = as.data.frame(pbmc@reductions[[reduction]]@cell.embeddings)
+      colnames(coor) = c('UMAP_1','UMAP_2')
+      coor$barcode_type = pbmc@meta.data$Barcode_family
+      coor1 = coor[coor$barcode_type %in% c('other barcode','no barcode'),]
+      coor2 = coor[!coor$barcode_type %in% c('other barcode','no barcode'),]
+      ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point(data=coor1,size=1)+
+        geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_void()+
+        scale_color_manual(values = colors)
+  }else if(any(c('data.frame','tbl_df') %in% class(pbmc))){
+    barcode_anno = rep('other barcode',nrow(pbmc))
+    barcode_anno[is.na(pbmc$barcodes)] = 'no barcode'
+    idx <- which(pbmc$barcodes %in% barcode_use)
+    barcode_anno[idx] <- paste0("select_barcode:",pbmc$cell_fate[idx])
+    coor = as.data.frame(pbmc[,1:2])
+    coor$barcode_type = barcode_anno
+    coor1 = coor[coor$barcode_type %in% c('other barcode','no barcode'),]
+    coor2 = coor[!coor$barcode_type %in% c('other barcode','no barcode'),]
+    ggplot(coor1,aes(x=UMAP_1,y=UMAP_2,color=barcode_type))+geom_point(data=coor1,size=1)+
+      geom_point(data=coor2,aes(x=UMAP_1,y=UMAP_2),size=2)+theme_void()+
+      scale_color_manual(values = colors)
+  }else{
+    stop('Error,please check input data class, only accept seurat and dataframe object')
+  }
 
+}
+
+
+#111
 dataset_cell_number_compare <- function(dataset1_name,dataset2_name,metdata_list){
 
     dataset1 = metdata_list[[dataset1_name]]
@@ -135,6 +181,9 @@ dataset_cell_number_compare <- function(dataset1_name,dataset2_name,metdata_list
 
 
 server <- function(input, output,session = session) {
+ 
+    
+    
     #HOME-------
     output$HOME_output_text <- renderUI({
         div(p("scLtDB is a database of single-cell multiomics lineage tracing.It encompasses a comprehensive collection of 30 manually curated datasets, each comprising well-annotated cell identities and barcodes.These datasets span across three distinct species, encompassing seven diverse tissues, and feature the utilization of 16 different lineage tracing technologies.scLTdb provides:"),
@@ -221,7 +270,7 @@ server <- function(input, output,session = session) {
         )
     }, deleteFile = FALSE)
     output$show_umap2 <- renderPlot({
-        plot_clone_embedding2(input$input_barcode,metadata = Select_dataseted())
+        plot_clone_embedding2(input$input_barcode,Select_dataseted(),colors = c(rgb(200/255,200/255,200/255),rgb(239/255,153/255,81/255))  )
     },
     height = 700,
     width = 800
@@ -450,4 +499,32 @@ server <- function(input, output,session = session) {
                                     metdata_list = obj_metadata_list)
 
     })
+    
+    
+    observe({
+      query <- parseQueryString(session$clientData$url_search)
+      if (!is.null(query$tab) ) {
+        updateNavbarPage(session, "inTabset", selected = query$tab)
+      }
+      
+    })
+    
+    # change URL 
+    
+   
+    observeEvent(input$inTabset, {
+      
+      query <- parseQueryString(session$clientData$url_search)
+      
+     
+      if (is.null(query$tab) || query$tab != input$inTabset) {
+        updateQueryString(paste0("?tab=", input$inTabset), mode = "push")
+      }
+    })
+
+      
+      
+    
+    
+    
 }
