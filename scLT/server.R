@@ -382,7 +382,17 @@ server <- function(input, output,session = session) {
         fate_rds_file = list.files(dir,pattern = 'fate_use.rds',full.names = T)
         fate_rds <- readRDS(fate_rds_file)
 
-        png_loc <- list.files(dir,pattern = paste0(input$ct,'_',input$fate_choose,'.png'),full.names = T)
+        escape_special_characters <- function(string) {
+  	special_chars <- c("\\", "^", "$", ".", "|", "?", "*", "+", "(", ")", "[", "{")
+  	escaped_string <- string
+  	for (char in special_chars) {
+    		escaped_string <- gsub(char, paste0("\\", char), escaped_string, fixed = TRUE)
+  	}
+  	return(escaped_string)
+        }
+        selected_png <- (subset(fate_rds[[input$ct]], fate_use == input$fate_choose))$pictrue
+        selected_png_escaped <- escape_special_characters(selected_png)
+        png_loc <- list.files(dir,pattern = (selected_png_escaped ),full.names = T)
         list(
             src = png_loc[1],
             contentType = "image/png",
