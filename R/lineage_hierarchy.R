@@ -278,6 +278,7 @@ clone_fate_bias <- function(data,fate_use = '',data_type = 'table',
   result_df = result_df[order(result_df[,6]),]
   result_df = result_df[result_df[,4]>0,]
   result_df$clone_size_rank = 1:nrow(result_df)  
+  result_df = result_df[result_df$fdr<0.05,]
   return(result_df)
 }
 
