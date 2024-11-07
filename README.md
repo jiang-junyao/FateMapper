@@ -23,7 +23,7 @@ devtools::install_github("jiang-junyao/FateMapper")
 
 The document and tutorial of FateMapper can be found at
 <https://jiang-junyao.github.io/FateMapper/>; The web tool version of
-FateMapper can be found at XXX
+FateMapper can be found at [scLT](https://scltdb.com)
 
 ## Citation
 
