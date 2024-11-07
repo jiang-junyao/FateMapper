@@ -27,7 +27,7 @@ FateMapper can be found at [scLT](https://scltdb.com)
 
 ## Citation
 
-Jiang, J., Ye, X., Kong, Y., Guo, C., Zhang, M., Cao, F., Zhang, Y., & Pei, W. (2024). scLTdb: a comprehensive single-cell lineage tracing database. Nucleic acids research, gkae913. Advance online publication. https://doi.org/10.1093/nar/gkae913
+Jiang, J., Ye, X., Kong, Y., Guo, C., Zhang, M., Cao, F., Zhang, Y., & Pei, W. (2024). scLTdb: a comprehensive single-cell lineage tracing database. Nucleic acids research. https://doi.org/10.1093/nar/gkae913
 
 ## Help
 
